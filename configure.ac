@@ -23,5 +23,8 @@ AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
 LT_INIT
 
+AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging", [The log manager DBus busname to own.])
+AC_DEFINE(IBM_LOGGING_PATH, "/com/ibm/logging", [The log manager DBus object path.])
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
