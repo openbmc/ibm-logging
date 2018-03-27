@@ -3,4 +3,16 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 sbin_PROGRAMS = ibm-log-manager
 
 ibm_log_manager_SOURCES = \
-	main.cpp
+	main.cpp \
+	manager.cpp
+
+ibm_log_manager_CXX_FLAGS =  \
+	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
+	$(SDBUSPLUS_CFLAGS) \
+	$(PHOSPHOR_LOGGING_CFLAGS)
+
+ibm_log_manager_LDFLAGS = \
+	-lstdc++fs \
+	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
+	$(SDBUSPLUS_LIBS) \
+	$(PHOSPHOR_LOGGING_LIBS)
