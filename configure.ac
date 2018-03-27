@@ -10,11 +10,23 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
+PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],,\
+    AC_MSG_ERROR(["Requires phosphor-dbus-interfaces package."]))
+PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
+    AC_MSG_ERROR(["Requires sdbusplus package."]))
+PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\
+    AC_MSG_ERROR(["Requires phosphor-logging package."]))
+
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX_14([noext])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
 LT_INIT
+
+AC_DEFINE(LOGGING_PATH, "/xyz/openbmc_project/logging",
+          [The xyz log manager DBus object path])
+AC_DEFINE(LOGGING_IFACE, "xyz.openbmc_project.Logging.Entry",
+          [The xyz log entry interface])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
