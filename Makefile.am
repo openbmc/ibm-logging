@@ -5,7 +5,8 @@ sbin_PROGRAMS = ibm-log-manager
 ibm_log_manager_SOURCES = \
 	dbus.cpp \
 	main.cpp \
-	manager.cpp
+	manager.cpp \
+	policy_table.cpp
 
 ibm_log_manager_CXX_FLAGS =  \
 	$(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
