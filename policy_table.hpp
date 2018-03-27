@@ -84,6 +84,28 @@ class Table
                 const std::string& error,
                 const std::string& modifier) const;
 
+        /**
+         * The default event ID to use when a match in the table
+         * wasn't found.
+         *
+         * @return std::string
+         */
+        inline std::string defaultEID() const
+        {
+            return DEFAULT_POLICY_EID;
+        }
+
+        /**
+         * The default error message to use when a match in the table
+         * wasn't found.
+         *
+         * @return std::string
+         */
+        inline std::string defaultMsg() const
+        {
+            return DEFAULT_POLICY_MSG;
+        }
+
     private:
 
         /**
