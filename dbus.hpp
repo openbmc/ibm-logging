@@ -20,6 +20,13 @@ using DbusPropertyMap = std::map<DbusProperty, Value>;
 using DbusInterfaceMap = std::map<DbusInterface, DbusPropertyMap>;
 using DbusInterfaceList = std::vector<DbusInterface>;
 
+using ObjectValueTree =
+    std::map<sdbusplus::message::object_path, DbusInterfaceMap>;
+
+ObjectValueTree getManagedObjects(
+        sdbusplus::bus::bus& bus,
+        const std::string& service,
+        const std::string& objPath);
 }
 }
 
