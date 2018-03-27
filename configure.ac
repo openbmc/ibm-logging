@@ -69,6 +69,11 @@ AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
 AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging",
           [The IBM log manager DBus busname to own])
 
+AC_DEFINE(DEFAULT_POLICY_EID, "None",
+          [The default event ID to use])
+AC_DEFINE(DEFAULT_POLICY_MSG, "An internal BMC error occurred",
+          [The default policy message to use])
+
 AC_ARG_VAR(POLICY_JSON_PATH, [The path to the policy json file])
 AS_IF([test "x$POLICY_JSON_PATH" == "x"], [POLICY_JSON_PATH="/usr/share/ibm-logging/policy.json"])
 AC_DEFINE_UNQUOTED([POLICY_JSON_PATH], ["$POLICY_JSON_PATH"], [The path to the policy json file on the BMC])
