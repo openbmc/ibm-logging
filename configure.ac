@@ -12,6 +12,8 @@ AC_PROG_MAKE_SET
 
 PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],,\
     AC_MSG_ERROR(["Requires openbmc/phosphor-dbus-interfaces package."]))
+PKG_CHECK_MODULES([IBM_DBUS_INTERFACES], [ibm-dbus-interfaces],,\
+    AC_MSG_ERROR(["Requires openbmc/ibm-dbus-interfaces package."]))
 PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
     AC_MSG_ERROR(["Requires openbmc/sdbusplus package."]))
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\

@@ -84,6 +84,20 @@ class Manager
                 const DbusPropertyMap& properties);
 
         /**
+         * Creates the IBM policy interface for a single error log
+         * and saves it in the list of interfaces.
+         *
+         * @param[in] objectPath - object path of the error log
+         * @param[in] properties - the xyz.openbmc_project.Logging.Entry
+         *                         properties
+         */
+#ifdef USE_POLICY_INTERFACE
+        void createPolicyInterface(
+                const std::string& objectPath,
+                const DbusPropertyMap& properties);
+#endif
+
+        /**
          * Returns the entry ID for a log
          *
          * @param[in] objectPath - the object path of the log
