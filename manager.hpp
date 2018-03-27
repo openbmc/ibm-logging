@@ -63,6 +63,23 @@ class Manager
         void interfaceRemoved(sdbusplus::message::message& msg);
 
         /**
+         * Creates the IBM interfaces for all existing error log
+         * entries.
+         */
+        void createAll();
+
+        /**
+         * Creates the IBM interface(s) for a single error log.
+         *
+         * @param[in] objectPath - object path of the error log
+         * @param[in] properties - the xyz.openbmc_project.Logging.Entry
+         *                         properties
+         */
+        void create(
+                const std::string& objectPath,
+                const DbusPropertyMap& properties);
+
+        /**
          * Returns the entry ID for a log
          *
          * @param[in] objectPath - the object path of the log
