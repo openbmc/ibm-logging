@@ -12,5 +12,6 @@ test_policy_LDFLAGS = -lgtest_main -lgtest \
 test_policy_SOURCES = test_policy.cpp
 test_policy_LDADD = \
 	$(top_builddir)/policy_table.o \
+	$(top_builddir)/policy_find.o \
 	-lstdc++fs \
 	$(SDBUSPLUS_LIBS)
