@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <phosphor-logging/log.hpp>
+#include <sstream>
 #include "policy_find.hpp"
 
 namespace ibm
@@ -54,11 +56,37 @@ static optional_ns::optional<T> getProperty(
 }
 
 /**
+ * Finds a value in the AdditionalData property, which is
+ * an array of strings in the form of:
+ *
+ *    NAME=VALUE
+ *
+ * @param[in] additionalData - the AdditionalData property contents
+ * @param[in] name - the name of the value to find
+ *
+ * @return optional<std::string> - the data value
+ */
+static optional_ns::optional<std::string> getAdditionalDataItem(
+        const std::vector<std::string>& additionalData,
+        const std::string& name)
+{
+    for (const auto& item : additionalData)
+    {
+        if (item.find(name+"=") != std::string::npos)
+        {
+            return item.substr(item.find('=') + 1);
+        }
+    }
+
+    return {};
+}
+
+/**
  * Returns the search modifier to use.
  *
  * The modifier is used when the error name itself isn't granular
  * enough to find a policy table entry.  What it looks for is
- * based on how rules given by the IBM service team.
+ * based on rules given by the IBM service team.
  *
  * Not all errors need a modifier, so this function isn't
  * guaranteed to find one.
@@ -73,13 +101,90 @@ static auto getSearchModifier(
 {
     std::string modifier;
 
+    //The modifier may be one of several things within the
+    //AdditionalData property.  Try them all until one
+    //is found.
+
     auto data = getProperty<std::vector<std::string>>(
             properties,
             "AdditionalData");
 
     if (data)
     {
-        //TODO
+        //An inventory callout
+        auto mod = getAdditionalDataItem(
+                *data, "CALLOUT_INVENTORY_PATH");
+        if (mod)
+        {
+            modifier = *mod;
+        }
+
+        if (modifier.empty())
+        {
+            //A device path, but we only care about the type
+            mod = getAdditionalDataItem(*data, "CALLOUT_DEVICE_PATH");
+            if (mod)
+            {
+                //The table only handles I2C and FSI
+                if ((*mod).find("i2c") != std::string::npos)
+                {
+                    modifier = "I2C";
+                }
+                else
+                {
+                    modifier = "FSI";
+                }
+            }
+        }
+
+        if (modifier.empty())
+        {
+            //A hostboot procedure ID
+            mod = getAdditionalDataItem(*data, "PROCEDURE");
+            if (mod)
+            {
+                //Convert decimal (e.g. 109) to hex (e.g. 6D)
+                std::ostringstream stream;
+                try
+                {
+                    stream << std::hex << std::stoul((*mod).c_str());
+                    auto value = stream.str();
+                    std::transform(
+                            value.begin(),
+                            value.end(),
+                            value.begin(),
+                            toupper);
+
+                    modifier = value;
+                }
+                catch (std::exception& e)
+                {
+                    using namespace phosphor::logging;
+                    log<level::ERR>("Invalid PROCEDURE value found",
+                            entry("PROCEDURE=%s", *mod));
+                }
+            }
+        }
+
+        if (modifier.empty())
+        {
+            //Comes from the power fault code on a voltage fault
+            mod = getAdditionalDataItem(*data, "RAIL_NAME");
+            if (mod)
+            {
+                modifier = *mod;
+            }
+        }
+
+        if (modifier.empty())
+        {
+            //Also from the power fault code on a PGOOD fault
+            mod = getAdditionalDataItem(*data, "INPUT_NAME");
+            if (mod)
+            {
+                modifier = *mod;
+            }
+        }
     }
 
     return modifier;
