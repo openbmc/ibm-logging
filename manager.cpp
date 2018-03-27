@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "manager.hpp"
+#include "policy_find.hpp"
 
 namespace ibm
 {
@@ -73,8 +74,44 @@ void Manager::create(
         const std::string& objectPath,
         const DbusPropertyMap& properties)
 {
-    //TODO
+
+#ifdef USE_POLICY_INTERFACE
+    createPolicyInterface(objectPath, properties);
+#endif
+
 }
+
+#ifdef USE_POLICY_INTERFACE
+void Manager::createPolicyInterface(
+        const std::string& objectPath,
+        const DbusPropertyMap& properties)
+{
+    auto values = policy::find(policies, properties);
+
+    auto object = std::make_shared<PolicyObject>(
+            bus, objectPath.c_str(), true);
+
+    object->eventID(std::get<policy::EIDField>(values));
+    object->description(std::get<policy::MsgField>(values));
+
+    object->emit_object_added();
+
+    auto id = getEntryID(objectPath);
+    auto entry = entries.find(id);
+
+    if (entry == entries.end())
+    {
+        InterfaceMap interfaces;
+        interfaces.emplace(InterfaceType::POLICY, object);
+        entries.emplace(id, interfaces);
+    }
+    else
+    {
+        entry->second.emplace(InterfaceType::POLICY, object);
+    }
+}
+#endif
+
 
 void Manager::interfaceAdded(sdbusplus::message::message& msg)
 {
