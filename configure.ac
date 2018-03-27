@@ -17,6 +17,9 @@ PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\
     AC_MSG_ERROR(["Requires openbmc/phosphor-logging package."]))
 
+AC_CHECK_HEADER(nlohmann/json.hpp, ,
+                [AC_MSG_ERROR([Could not find nlohmann/json.hpp... nlohmann/json package required])])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX_14([noext])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
