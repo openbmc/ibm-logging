@@ -35,6 +35,9 @@ Manager::Manager(sdbusplus::bus::bus& bus) :
                 sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
                 std::bind(std::mem_fn(&Manager::interfaceRemoved),
                           this, std::placeholders::_1))
+#ifdef USE_POLICY_INTERFACE
+        , policies(POLICY_JSON_PATH)
+#endif
 {
     createAll();
 }

@@ -4,8 +4,12 @@
 #include <experimental/filesystem>
 #include <map>
 #include <sdbusplus/bus.hpp>
+#include "config.h"
 #include "dbus.hpp"
 #include "interfaces.hpp"
+#ifdef USE_POLICY_INTERFACE
+#include "policy_table.hpp"
+#endif
 
 namespace ibm
 {
@@ -116,6 +120,13 @@ class Manager
          * There may be multiple interfaces per ID.
          */
         EntryMap entries;
+
+#ifdef USE_POLICY_INTERFACE
+        /**
+         * The class the wraps the IBM error logging policy table.
+         */
+        policy::Table policies;
+#endif
 };
 
 }

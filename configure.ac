@@ -47,6 +47,22 @@ AS_IF([test "x$enable_oe_sdk" == "xyes"],
     AC_SUBST([OESDK_TESTCASE_FLAGS], [$testcase_flags])
 )
 
+#The policy data must have been defined by the service folks
+#for it to be used, so allow its use to be configurable and
+#default it to off.
+AC_ARG_ENABLE([policy-interface],
+              AS_HELP_STRING([--enable-policy-interface],
+                             [Enable the Policy D-Bus interface])
+)
+
+AC_ARG_VAR(USE_POLICY_INTERFACE, [If the Policy D-Bus interface should be created])
+
+AS_IF([test "x$enable_policy_interface" == "xyes"],
+      [USE_POLICY_INTERFACE="yes"]
+      AC_DEFINE_UNQUOTED([USE_POLICY_INTERFACE], ["$USE_POLICY_INTERFACE"],
+                         [If the Policy D-Bus interface should be created])
+)
+
 AC_DEFINE(LOGGING_PATH, "/xyz/openbmc_project/logging",
           [The xyz log manager DBus object path])
 AC_DEFINE(LOGGING_IFACE, "xyz.openbmc_project.Logging.Entry",
@@ -55,6 +71,10 @@ AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
           [The xyz logging busname])
 AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging",
           [The IBM log manager DBus busname to own])
+
+AC_ARG_VAR(POLICY_JSON_PATH, [The path to the policy json file])
+AS_IF([test "x$POLICY_JSON_PATH" == "x"], [POLICY_JSON_PATH="/usr/share/ibm-logging/policy.json"])
+AC_DEFINE_UNQUOTED([POLICY_JSON_PATH], ["$POLICY_JSON_PATH"], [The path to the policy json file on the BMC])
 
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
