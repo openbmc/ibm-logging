@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <phosphor-logging/log.hpp>
 #include "policy_find.hpp"
 
 namespace ibm
@@ -22,11 +23,86 @@ namespace logging
 namespace policy
 {
 
+namespace optional_ns = std::experimental;
+
+/**
+ * Returns a property value from a map of properties.
+ *
+ * @tparam - T the property data type
+ * @param[in] properties - the property map
+ * @param[in] name - the property name
+ *
+ * @return optional<T> - the property value
+ */
+template<typename T>
+optional_ns::optional<T> getProperty(
+        const DbusPropertyMap& properties,
+        const std::string& name)
+{
+    auto prop = properties.find(name);
+
+    if (prop != properties.end())
+    {
+        return prop->second.template get<T>();
+    }
+
+    return {};
+}
+
+/**
+ * Returns the search modifier to use.
+ *
+ * The modifier is used when the error name itself isn't granular
+ * enough to find a policy table entry.  The modifier is determined
+ * using rules provided by the IBM service team.
+ *
+ * Not all errors need a modifier, so this function isn't
+ * guaranteed to find one.
+ *
+ * @param[in] properties - the property map for the error
+ *
+ * @return string - the search modifier
+ *                  may be empty if none found
+ */
+auto getSearchModifier(
+        const DbusPropertyMap& properties)
+{
+    std::string modifier;
+
+    auto data = getProperty<std::vector<std::string>>(
+            properties,
+            "AdditionalData");
+
+    if (data)
+    {
+        //TODO
+    }
+
+    return modifier;
+}
+
 PolicyProps find(
         const policy::Table& policy,
         const DbusPropertyMap& errorLogProperties)
 {
-    //TODO: find the entry
+    auto errorMsg = getProperty<std::string>(
+            errorLogProperties, "Message"); //e.g. xyz.X.Error.Y
+    if (errorMsg)
+    {
+        auto modifier = getSearchModifier(errorLogProperties);
+
+        auto result = policy.find(*errorMsg, modifier);
+
+        if (result)
+        {
+            return {(*result).get().ceid, (*result).get().msg};
+        }
+    }
+    else
+    {
+        using namespace phosphor::logging;
+        log<level::ERR>("No Message metadata found in an error");
+    }
 
     return {policy.defaultEID(), policy.defaultMsg()};
 }
