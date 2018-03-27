@@ -35,6 +35,7 @@ Makefile.in
 
 # Repo Specific Items
 ibm-log-manager
+test_policy
 .*.swp
 *.o
 *.trs
