@@ -29,6 +29,8 @@ AC_DEFINE(LOGGING_IFACE, "xyz.openbmc_project.Logging.Entry",
           [The xyz log entry interface])
 AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
           [The xyz logging busname])
+AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging",
+          [The IBM log manager DBus busname to own])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

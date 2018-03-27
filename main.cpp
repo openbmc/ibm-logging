@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <sdbusplus/bus.hpp>
+#include <sdbusplus/server/manager.hpp>
+#include "manager.hpp"
+#include "config.h"
 
 int main()
 {
+    auto bus = sdbusplus::bus::new_default();
+
+    sdbusplus::server::manager::manager objManager(bus, LOGGING_PATH);
+
+    ibm::logging::Manager manager{bus};
+
+    bus.request_name(IBM_LOGGING_BUSNAME);
+
+    while (true)
+    {
+        bus.process_discard();
+        bus.wait();
+    }
+
     return 0;
 }
