@@ -27,6 +27,8 @@ AC_DEFINE(LOGGING_PATH, "/xyz/openbmc_project/logging",
           [The xyz log manager DBus object path])
 AC_DEFINE(LOGGING_IFACE, "xyz.openbmc_project.Logging.Entry",
           [The xyz log entry interface])
+AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
+          [The xyz logging busname])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -36,7 +36,38 @@ Manager::Manager(sdbusplus::bus::bus& bus) :
                 std::bind(std::mem_fn(&Manager::interfaceRemoved),
                           this, std::placeholders::_1))
 {
-    //TODO: createAll();
+    createAll();
+}
+
+void Manager::createAll()
+{
+    auto objects = getManagedObjects(
+            bus, LOGGING_BUSNAME, LOGGING_PATH);
+
+    for (const auto& object : objects)
+    {
+        const auto& interfaces = object.second;
+
+        auto propertyMap = std::find_if(
+                interfaces.begin(),
+                interfaces.end(),
+                [](const auto& i)
+                {
+                    return i.first == LOGGING_IFACE;
+                });
+
+        if (propertyMap != interfaces.end())
+        {
+            create(object.first, propertyMap->second);
+        }
+    }
+}
+
+void Manager::create(
+        const std::string& objectPath,
+        const DbusPropertyMap& properties)
+{
+    //TODO
 }
 
 void Manager::interfaceAdded(sdbusplus::message::message& msg)
@@ -58,7 +89,7 @@ void Manager::interfaceAdded(sdbusplus::message::message& msg)
 
     if (propertyMap != interfaces.end())
     {
-        //TODO: create(path, propertyMap->second);
+        create(path, propertyMap->second);
     }
 }
 
