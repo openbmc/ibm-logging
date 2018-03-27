@@ -83,7 +83,38 @@ class Table
                 const std::string& error,
                 const std::string& modifier) const;
 
+        /**
+         * The default event ID to use when a match in the table
+         * wasn't found.
+         *
+         * @return std::string
+         */
+        inline std::string defaultEID() const
+        {
+            return defaultPolicyEID;
+        }
+
+        /**
+         * The default error message to use when a match in the table
+         * wasn't found.
+         *
+         * @return std::string
+         */
+        inline std::string defaultMsg() const
+        {
+            return defaultPolicyMessage;
+        }
+
     private:
+        /**
+         * The default event ID
+         */
+        const std::string defaultPolicyEID{DEFAULT_POLICY_EID};
+
+        /**
+         * The default event message
+         */
+        const std::string defaultPolicyMessage{DEFAULT_POLICY_MSG};
 
         /**
          * Loads the JSON data into the PolicyMap map
