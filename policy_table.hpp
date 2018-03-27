@@ -1,5 +1,6 @@
 #pragma once
 
+#include <experimental/optional>
 #include <map>
 #include <vector>
 #include "config.h"
@@ -26,7 +27,11 @@ struct Details
 };
 
 using DetailsList = std::vector<Details>;
+using DetailsIterator = DetailsList::const_iterator;
+
 using PolicyMap = std::map<std::string, DetailsList>;
+
+namespace optional_ns = std::experimental;
 
 /**
  * @class Table
@@ -63,6 +68,21 @@ class Table
         {
             return loaded;
         }
+
+        /**
+         * Finds an entry in the policy table based on the
+         * error and the search modifier.
+         *
+         * @param[in] error - the error, like xyz.openbmc_project.Error.X
+         * @param[in] modifier - the search modifier, used to find the entry
+         *                   when multiple ones share the same error
+         *
+         * @return optional<DetailsIterator> - an interator to the details
+         *                                     entry
+         */
+        optional_ns::optional<DetailsIterator> find(
+                const std::string& error,
+                const std::string& modifier) const;
 
     private:
 
