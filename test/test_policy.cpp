@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <experimental/filesystem>
 #include "policy_table.hpp"
+#include "policy_find.hpp"
 
 using namespace ibm::logging;
 namespace fs = std::experimental::filesystem;
@@ -197,3 +198,136 @@ TEST_F(PolicyTableTest, TestTable)
         }
     }
 }
+
+/**
+ * Test policy::find() that uses the data from a property
+ * map to find entries in the policy table.
+ */
+TEST_F(PolicyTableTest, TestFinder)
+{
+    using namespace std::literals::string_literals;
+
+    policy::Table policy{jsonFile};
+    ASSERT_EQ(policy.isLoaded(), true);
+
+    //A basic search with no modifier
+    {
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test1"s}}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "ABCD1234");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error ABCD1234");
+    }
+
+    //Use CALLOUT_INVENTORY_PATH from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "CALLOUT_INVENTORY_PATH=mod2"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test3"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "BBBBBB");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error BBBBBB");
+    }
+
+    //Use an I2C DEVICE_PATH from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "CALLOUT_DEVICE_PATH=/some/i2c/path"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test4"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "DDDDDDDD");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error DDDDDDDD");
+    }
+
+    //Use an FSI DEVICE_PATH from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "CALLOUT_DEVICE_PATH=/some/fsi/path"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test4"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "EEEEEEEE");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error EEEEEEEE");
+    }
+
+    //Use PROCEDURE from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "PROCEDURE=109"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test5"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "FFFFFFFF");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error FFFFFFFF");
+    }
+
+    //Use RAIL_NAME from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "RAIL_NAME=RAIL_5"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test6"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "GGGGGGGG");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error GGGGGGGG");
+    }
+
+    //Use INPUT_NAME from the AdditionalData property
+    {
+        std::vector<std::string> ad{
+                "FOO=BAR"s,
+                "INPUT_NAME=INPUT_42"s};
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test7"s}},
+            {"AdditionalData"s, ad}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "HHHHHHHH");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error HHHHHHHH");
+    }
+
+    //Test not finding an entry.
+    {
+        DbusPropertyMap testProperties
+        {
+            {"Message"s, Value{"hello world"s}}
+        };
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), policy.defaultEID());
+        ASSERT_EQ(std::get<policy::MsgField>(values), policy.defaultMsg());
+    }
+}
+
