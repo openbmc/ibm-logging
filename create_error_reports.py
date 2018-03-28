@@ -1,0 +1,130 @@
+#!/usr/bin/env python
+
+'''Generates 2 reports about OpenBMC error logs:
+
+    1) Dumps every error defined in the errors.yaml files passed in
+       into a single JSON file that looks like:
+
+       {
+         "desc":"Callout IIC device",
+         "error":"xyz.openbmc_project.Common.Callout.Error.IIC",
+         "file":"xyz/openbmc_project/Common/Callout.errors.yaml",
+         "metadata":[
+           "CALLOUT_IIC_BUS",
+           "CALLOUT_IIC_ADDR",
+           "Inherits xyz.openbmc_project.Common.Callout.Error.Device"
+          ]
+       }
+
+    2) Crosschecks this generated JSON with the IBM error policy table,
+       showing if any errors are in one file but not the other.
+
+'''
+
+import argparse
+import os
+import json
+import yaml
+
+
+def get_errors(yaml_dirs):
+    '''Finds all of the errors in all of the error YAML files in
+       the directories passed in.'''
+
+    all_errors = []
+    for yaml_dir in yaml_dirs:
+        error_data = []
+        yaml_files = get_yaml(yaml_dir)
+
+        for yaml_file in yaml_files:
+            all_errors += read_error_yaml(yaml_dir, yaml_file)
+
+    return all_errors
+
+
+def read_error_yaml(yaml_dir, yaml_file):
+    '''Returns a list of dictionary objects reflecting the error YAML.'''
+
+    all_errors = []
+
+    #xyz/openbmc_project/x.errors.yaml -> xyz.openbmc_project.x.Error
+    error_base = yaml_file.replace(os.sep, '.')
+    error_base = error_base.replace('.errors.yaml', '')
+    error_base += '.Error.'
+
+    #Also needs to look up the metadata from the .metadata.yaml files
+    metadata_file = yaml_file.replace('errors.yaml', 'metadata.yaml')
+    metadata = []
+
+    if os.path.exists(os.path.join(yaml_dir, metadata_file)):
+        with open(os.path.join(yaml_dir, metadata_file)) as mfd:
+            metadata = yaml.safe_load(mfd.read())
+
+    with open(os.path.join(yaml_dir, yaml_file)) as fd:
+        data = yaml.safe_load(fd.read())
+
+        for e in data:
+            error = {}
+            error['error'] = error_base + e['name']
+            error['desc'] = e['description']
+            error['metadata'] = get_metadata(e['name'], metadata)
+            error['file'] = yaml_file
+            all_errors.append(error)
+
+    return all_errors
+
+
+def get_metadata(name, metadata):
+    #TODO
+    data = []
+    return data
+
+
+def get_yaml(yaml_dir):
+    '''Finds all of the *.errors.yaml files in the directory passed in.
+       Returns a list of entries like xyz/openbmc_project/Common.Errors.yaml.
+    '''
+
+    err_files = []
+    metadata_files = []
+    if os.path.exists(yaml_dir):
+        for directory, _, files in os.walk(yaml_dir):
+            if not files:
+                continue
+
+            err_files += map(
+                lambda f: os.path.relpath(
+                    os.path.join(directory, f),
+                    yaml_dir),
+                filter(lambda f: f.endswith('.errors.yaml'), files))
+
+    return err_files
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Error log policy reports')
+
+    parser.add_argument('-y', '--yaml_dirs',
+                        dest='yaml_dirs',
+                        default='.',
+                        help='Comma separated list of error YAML dirs')
+    parser.add_argument('-e', '--error_file',
+                        dest='error_file',
+                        default='obmc-errors.json',
+                        help='Output Error report file')
+    parser.add_argument('-p', '--policy',
+                        dest='policy_file',
+                        default='condensed.json',
+                        help='Condensed policy in JSON')
+
+    args = parser.parse_args()
+
+    dirs = args.yaml_dirs.split(',')
+    errors = get_errors(dirs)
+
+    with open(args.error_file, 'w') as outfile:
+        json.dump(errors, outfile, sort_keys=True,
+                  indent=2, separators=(',', ':'))
+
+    #TODO: crosschecking
