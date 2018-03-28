@@ -132,6 +132,36 @@ def get_yaml(yaml_dir):
     return err_files
 
 
+def crosscheck(errors, policy, outfile):
+    '''Crosschecks that the errors found in the YAML are in the
+       policy file, and vice versa.
+    '''
+
+    policy_errors = [x['err'] for x in policy]
+    yaml_errors = [x['error'] for x in errors]
+
+    out = open(outfile, 'w')
+    out.write("YAML errors not in policy table:\n\n")
+
+    for e in yaml_errors:
+        if e not in policy_errors:
+            out.write("    %s\n" % e)
+
+    out.write("\n%d total errors in the YAML\n\n" % len(yaml_errors))
+    out.write("Policy errors not in YAML:\n\n")
+
+    for e in policy_errors:
+        if e not in yaml_errors:
+            out.write("    %s\n" % e)
+
+    num_details = 0
+    for e in policy:
+        for d in e['dtls']:
+            num_details += 1
+
+    out.write("\n%d total errors (with %d total details blocks) in the "
+              "policy table\n\n" % (len(policy_errors), num_details))
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Error log policy reports')
@@ -148,6 +178,9 @@ if __name__ == '__main__':
                         dest='policy_file',
                         default='condensed.json',
                         help='Condensed policy in JSON')
+    parser.add_argument('-x', '--crosscheck',
+                        dest='crosscheck_file',
+                        help='YAML vs policy table crosscheck output file')
 
     args = parser.parse_args()
 
@@ -158,4 +191,8 @@ if __name__ == '__main__':
         json.dump(errors, outfile, sort_keys=True,
                   indent=2, separators=(',', ':'))
 
-    #TODO: crosschecking
+    if args.crosscheck_file:
+        with open(args.policy_file) as pf:
+            policy = yaml.safe_load(pf.read())
+
+        crosscheck(errors, policy, args.crosscheck_file)
