@@ -74,9 +74,40 @@ def read_error_yaml(yaml_dir, yaml_file):
     return all_errors
 
 
+def add_error(val):
+    '''Adds the '.Error' before the last segment of an error string.'''
+    dot = val.rfind('.')
+    return val[:dot] + '.Error' + val[dot:]
+
+
 def get_metadata(name, metadata):
-    #TODO
+    '''Finds metadata entries for the error in the metadata
+       dictionary parsed out of the *.metadata.yaml files.
+
+       The metadata YAML looks something like:
+            - name: SlaveDetectionFailure
+              meta:
+                - str: "ERRNO=%d"
+                  type: int32
+              inherits:
+                - xyz.openbmc_project.Callout
+      '''
+
     data = []
+    for m in metadata:
+        if m['name'] == name:
+            if 'meta' in m:
+                for entry in m['meta']:
+                    #Get the name from name=value
+                    n = entry['str'].split('=')[0]
+                    data.append(n)
+
+            #inherits is a list, return it comma separated
+            if 'inherits' in m:
+                vals = list(map(add_error, m['inherits']))
+                i = ','.join(vals)
+                data.append("Inherits %s" % i)
+
     return data
 
 
