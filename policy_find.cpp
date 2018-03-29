@@ -35,10 +35,9 @@ namespace optional_ns = std::experimental;
  *
  * @return optional<T> - the property value
  */
-template<typename T>
-optional_ns::optional<T> getProperty(
-        const DbusPropertyMap& properties,
-        const std::string& name)
+template <typename T>
+optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
+                                     const std::string& name)
 {
     auto prop = properties.find(name);
 
@@ -61,13 +60,13 @@ optional_ns::optional<T> getProperty(
  *
  * @return optional<std::string> - the data value
  */
-optional_ns::optional<std::string> getAdditionalDataItem(
-        const std::vector<std::string>& additionalData,
-        const std::string& name)
+optional_ns::optional<std::string>
+    getAdditionalDataItem(const std::vector<std::string>& additionalData,
+                          const std::string& name)
 {
     for (const auto& item : additionalData)
     {
-        if (item.find(name+"=") != std::string::npos)
+        if (item.find(name + "=") != std::string::npos)
         {
             return item.substr(item.find('=') + 1);
         }
@@ -91,8 +90,7 @@ optional_ns::optional<std::string> getAdditionalDataItem(
  * @return string - the search modifier
  *                  may be empty if none found
  */
-auto getSearchModifier(
-        const DbusPropertyMap& properties)
+auto getSearchModifier(const DbusPropertyMap& properties)
 {
     // The modifier may be one of several things within the
     // AdditionalData property.  Try them all until one
@@ -151,8 +149,8 @@ auto getSearchModifier(
 
             if (!value.empty())
             {
-                std::transform(
-                        value.begin(), value.end(), value.begin(), toupper);
+                std::transform(value.begin(), value.end(), value.begin(),
+                               toupper);
                 return value;
             }
         }
@@ -167,12 +165,11 @@ auto getSearchModifier(
     return std::string{};
 }
 
-PolicyProps find(
-        const policy::Table& policy,
-        const DbusPropertyMap& errorLogProperties)
+PolicyProps find(const policy::Table& policy,
+                 const DbusPropertyMap& errorLogProperties)
 {
-    auto errorMsg = getProperty<std::string>(
-            errorLogProperties, "Message"); //e.g. xyz.X.Error.Y
+    auto errorMsg = getProperty<std::string>(errorLogProperties,
+                                             "Message"); // e.g. xyz.X.Error.Y
     if (errorMsg)
     {
         auto modifier = getSearchModifier(errorLogProperties);
@@ -192,7 +189,6 @@ PolicyProps find(
 
     return {policy.defaultEID(), policy.defaultMsg()};
 }
-
 }
 }
 }

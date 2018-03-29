@@ -23,21 +23,20 @@ namespace logging
 {
 
 Manager::Manager(sdbusplus::bus::bus& bus) :
-        bus(bus),
-        addMatch(
-                bus,
-                sdbusplus::bus::match::rules::interfacesAdded() +
-                sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
-                std::bind(std::mem_fn(&Manager::interfaceAdded),
-                          this, std::placeholders::_1)),
-        removeMatch(
-                bus,
+    bus(bus),
+    addMatch(bus,
+             sdbusplus::bus::match::rules::interfacesAdded() +
+                 sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
+             std::bind(std::mem_fn(&Manager::interfaceAdded), this,
+                       std::placeholders::_1)),
+    removeMatch(bus,
                 sdbusplus::bus::match::rules::interfacesRemoved() +
-                sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
-                std::bind(std::mem_fn(&Manager::interfaceRemoved),
-                          this, std::placeholders::_1))
+                    sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
+                std::bind(std::mem_fn(&Manager::interfaceRemoved), this,
+                          std::placeholders::_1))
 #ifdef USE_POLICY_INTERFACE
-        , policies(POLICY_JSON_PATH)
+    ,
+    policies(POLICY_JSON_PATH)
 #endif
 {
     createAll();
@@ -45,20 +44,15 @@ Manager::Manager(sdbusplus::bus::bus& bus) :
 
 void Manager::createAll()
 {
-    auto objects = getManagedObjects(
-            bus, LOGGING_BUSNAME, LOGGING_PATH);
+    auto objects = getManagedObjects(bus, LOGGING_BUSNAME, LOGGING_PATH);
 
     for (const auto& object : objects)
     {
         const auto& interfaces = object.second;
 
         auto propertyMap = std::find_if(
-                interfaces.begin(),
-                interfaces.end(),
-                [](const auto& i)
-                {
-                    return i.first == LOGGING_IFACE;
-                });
+            interfaces.begin(), interfaces.end(),
+            [](const auto& i) { return i.first == LOGGING_IFACE; });
 
         if (propertyMap != interfaces.end())
         {
@@ -67,26 +61,22 @@ void Manager::createAll()
     }
 }
 
-void Manager::create(
-        const std::string& objectPath,
-        const DbusPropertyMap& properties)
+void Manager::create(const std::string& objectPath,
+                     const DbusPropertyMap& properties)
 {
 
 #ifdef USE_POLICY_INTERFACE
     createPolicyInterface(objectPath, properties);
 #endif
-
 }
 
 #ifdef USE_POLICY_INTERFACE
-void Manager::createPolicyInterface(
-        const std::string& objectPath,
-        const DbusPropertyMap& properties)
+void Manager::createPolicyInterface(const std::string& objectPath,
+                                    const DbusPropertyMap& properties)
 {
     auto values = policy::find(policies, properties);
 
-    auto object = std::make_shared<PolicyObject>(
-            bus, objectPath.c_str(), true);
+    auto object = std::make_shared<PolicyObject>(bus, objectPath.c_str(), true);
 
     object->eventID(std::get<policy::EIDField>(values));
     object->description(std::get<policy::MsgField>(values));
@@ -109,7 +99,6 @@ void Manager::createPolicyInterface(
 }
 #endif
 
-
 void Manager::interfaceAdded(sdbusplus::message::message& msg)
 {
     sdbusplus::message::object_path path;
@@ -117,15 +106,11 @@ void Manager::interfaceAdded(sdbusplus::message::message& msg)
 
     msg.read(path, interfaces);
 
-    //Find the Logging.Entry interface with all of its properties
-    //to pass to create().
-    auto propertyMap = std::find_if(
-            interfaces.begin(),
-            interfaces.end(),
-            [](const auto& i)
-            {
-                return i.first == LOGGING_IFACE;
-            });
+    // Find the Logging.Entry interface with all of its properties
+    // to pass to create().
+    auto propertyMap =
+        std::find_if(interfaces.begin(), interfaces.end(),
+                     [](const auto& i) { return i.first == LOGGING_IFACE; });
 
     if (propertyMap != interfaces.end())
     {
@@ -140,13 +125,10 @@ void Manager::interfaceRemoved(sdbusplus::message::message& msg)
 
     msg.read(path, interfaces);
 
-    //If the Logging.Entry interface was removed, then remove
-    //our object
+    // If the Logging.Entry interface was removed, then remove
+    // our object
 
-    auto i = std::find(
-            interfaces.begin(),
-            interfaces.end(),
-            LOGGING_IFACE);
+    auto i = std::find(interfaces.begin(), interfaces.end(), LOGGING_IFACE);
 
     if (i != interfaces.end())
     {
@@ -159,6 +141,5 @@ void Manager::interfaceRemoved(sdbusplus::message::message& msg)
         }
     }
 }
-
 }
 }

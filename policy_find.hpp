@@ -24,10 +24,8 @@ using PolicyProps = std::tuple<std::string, std::string>;
  *            interface
  * @return PolicyProps - a tuple of policy details.
  */
-PolicyProps find(
-        const Table& policy,
-        const DbusPropertyMap& errorLogProperties);
-
+PolicyProps find(const Table& policy,
+                 const DbusPropertyMap& errorLogProperties);
 }
 }
 }

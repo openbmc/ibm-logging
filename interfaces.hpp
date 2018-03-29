@@ -17,6 +17,5 @@ enum class InterfaceType
 {
     POLICY
 };
-
 }
 }
