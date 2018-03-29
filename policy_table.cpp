@@ -38,7 +38,7 @@ Table::Table(const std::string& jsonFile)
     else
     {
         log<level::INFO>("Policy table JSON file does not exist",
-                entry("FILE=%s", jsonFile.c_str()));
+                         entry("FILE=%s", jsonFile.c_str()));
     }
 }
 
@@ -70,33 +70,30 @@ void Table::load(const std::string& jsonFile)
     catch (std::exception& e)
     {
         log<level::ERR>("Failed loading policy table json file",
-                entry("FILE=%s", jsonFile.c_str()),
-                entry("ERROR=%s", e.what()));
+                        entry("FILE=%s", jsonFile.c_str()),
+                        entry("ERROR=%s", e.what()));
         loaded = false;
     }
 }
 
-optional_ns::optional<DetailsIterator> Table::find(
-        const std::string& error,
-        const std::string& modifier) const
+optional_ns::optional<DetailsIterator>
+    Table::find(const std::string& error, const std::string& modifier) const
 {
-    //First find the entry based on the error, and then find which
-    //underlying details object it is with the help of the modifier.
+    // First find the entry based on the error, and then find which
+    // underlying details object it is with the help of the modifier.
 
     auto policy = policies.find(error);
 
     if (policy != policies.end())
     {
-        //Not all policy entries have a modifier defined, so if it is
-        //empty that will return as a match.
+        // Not all policy entries have a modifier defined, so if it is
+        // empty that will return as a match.
 
         auto details = std::find_if(
-                policy->second.begin(),
-                policy->second.end(),
-                [&modifier](const auto& d)
-                {
-                    return d.modifier.empty() || (modifier == d.modifier);
-                });
+            policy->second.begin(), policy->second.end(),
+            [&modifier](const auto& d) {
+                return d.modifier.empty() || (modifier == d.modifier);
+            });
 
         if (details != policy->second.end())
         {
@@ -106,8 +103,6 @@ optional_ns::optional<DetailsIterator> Table::find(
 
     return {};
 }
-
-
 }
 }
 }

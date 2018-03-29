@@ -21,18 +21,15 @@ namespace ibm
 namespace logging
 {
 
-ObjectValueTree getManagedObjects(
-        sdbusplus::bus::bus& bus,
-        const std::string& service,
-        const std::string& objPath)
+ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
+                                  const std::string& service,
+                                  const std::string& objPath)
 {
     ObjectValueTree interfaces;
 
-    auto method = bus.new_method_call(
-                      service.c_str(),
-                      objPath.c_str(),
-                      "org.freedesktop.DBus.ObjectManager",
-                      "GetManagedObjects");
+    auto method = bus.new_method_call(service.c_str(), objPath.c_str(),
+                                      "org.freedesktop.DBus.ObjectManager",
+                                      "GetManagedObjects");
 
     auto reply = bus.call(method);
 
@@ -40,7 +37,7 @@ ObjectValueTree getManagedObjects(
     {
         using namespace phosphor::logging;
         log<level::ERR>("Failed to get managed objects",
-                entry("PATH=%s", objPath.c_str()));
+                        entry("PATH=%s", objPath.c_str()));
     }
     else
     {
@@ -49,6 +46,5 @@ ObjectValueTree getManagedObjects(
 
     return interfaces;
 }
-
 }
 }
