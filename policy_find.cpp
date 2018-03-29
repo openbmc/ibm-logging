@@ -35,10 +35,9 @@ namespace optional_ns = std::experimental;
  *
  * @return optional<T> - the property value
  */
-template<typename T>
-optional_ns::optional<T> getProperty(
-        const DbusPropertyMap& properties,
-        const std::string& name)
+template <typename T>
+optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
+                                     const std::string& name)
 {
     auto prop = properties.find(name);
 
@@ -61,13 +60,13 @@ optional_ns::optional<T> getProperty(
  *
  * @return optional<std::string> - the data value
  */
-optional_ns::optional<std::string> getAdditionalDataItem(
-        const std::vector<std::string>& additionalData,
-        const std::string& name)
+optional_ns::optional<std::string>
+    getAdditionalDataItem(const std::vector<std::string>& additionalData,
+                          const std::string& name)
 {
     for (const auto& item : additionalData)
     {
-        if (item.find(name+"=") != std::string::npos)
+        if (item.find(name + "=") != std::string::npos)
         {
             return item.substr(item.find('=') + 1);
         }
@@ -91,24 +90,21 @@ optional_ns::optional<std::string> getAdditionalDataItem(
  * @return string - the search modifier
  *                  may be empty if none found
  */
-auto getSearchModifier(
-        const DbusPropertyMap& properties)
+auto getSearchModifier(const DbusPropertyMap& properties)
 {
     std::string modifier;
 
-    //The modifier may be one of several things within the
-    //AdditionalData property.  Try them all until one
-    //is found.
+    // The modifier may be one of several things within the
+    // AdditionalData property.  Try them all until one
+    // is found.
 
-    auto data = getProperty<std::vector<std::string>>(
-            properties,
-            "AdditionalData");
+    auto data =
+        getProperty<std::vector<std::string>>(properties, "AdditionalData");
 
     if (data)
     {
-        //An inventory callout
-        auto mod = getAdditionalDataItem(
-                *data, "CALLOUT_INVENTORY_PATH");
+        // An inventory callout
+        auto mod = getAdditionalDataItem(*data, "CALLOUT_INVENTORY_PATH");
         if (mod)
         {
             modifier = *mod;
@@ -116,11 +112,11 @@ auto getSearchModifier(
 
         if (modifier.empty())
         {
-            //A device path, but we only care about the type
+            // A device path, but we only care about the type
             mod = getAdditionalDataItem(*data, "CALLOUT_DEVICE_PATH");
             if (mod)
             {
-                //The table only handles I2C and FSI
+                // The table only handles I2C and FSI
                 if ((*mod).find("i2c") != std::string::npos)
                 {
                     modifier = "I2C";
@@ -134,21 +130,18 @@ auto getSearchModifier(
 
         if (modifier.empty())
         {
-            //A hostboot procedure ID
+            // A hostboot procedure ID
             mod = getAdditionalDataItem(*data, "PROCEDURE");
             if (mod)
             {
-                //Convert decimal (e.g. 109) to hex (e.g. 6D)
+                // Convert decimal (e.g. 109) to hex (e.g. 6D)
                 std::ostringstream stream;
                 try
                 {
                     stream << std::hex << std::stoul((*mod).c_str());
                     auto value = stream.str();
-                    std::transform(
-                            value.begin(),
-                            value.end(),
-                            value.begin(),
-                            toupper);
+                    std::transform(value.begin(), value.end(), value.begin(),
+                                   toupper);
 
                     modifier = value;
                 }
@@ -156,14 +149,14 @@ auto getSearchModifier(
                 {
                     using namespace phosphor::logging;
                     log<level::ERR>("Invalid PROCEDURE value found",
-                            entry("PROCEDURE=%s", *mod));
+                                    entry("PROCEDURE=%s", *mod));
                 }
             }
         }
 
         if (modifier.empty())
         {
-            //Comes from the power fault code on a voltage fault
+            // Comes from the power fault code on a voltage fault
             mod = getAdditionalDataItem(*data, "RAIL_NAME");
             if (mod)
             {
@@ -173,7 +166,7 @@ auto getSearchModifier(
 
         if (modifier.empty())
         {
-            //Also from the power fault code on a PGOOD fault
+            // Also from the power fault code on a PGOOD fault
             mod = getAdditionalDataItem(*data, "INPUT_NAME");
             if (mod)
             {
@@ -185,12 +178,11 @@ auto getSearchModifier(
     return modifier;
 }
 
-PolicyProps find(
-        const policy::Table& policy,
-        const DbusPropertyMap& errorLogProperties)
+PolicyProps find(const policy::Table& policy,
+                 const DbusPropertyMap& errorLogProperties)
 {
-    auto errorMsg = getProperty<std::string>(
-            errorLogProperties, "Message"); //e.g. xyz.X.Error.Y
+    auto errorMsg = getProperty<std::string>(errorLogProperties,
+                                             "Message"); // e.g. xyz.X.Error.Y
     if (errorMsg)
     {
         auto modifier = getSearchModifier(errorLogProperties);
@@ -210,7 +202,6 @@ PolicyProps find(
 
     return {policy.defaultEID(), policy.defaultMsg()};
 }
-
 }
 }
 }
