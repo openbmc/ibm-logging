@@ -49,6 +49,11 @@ class Manager
      */
     void erase(const std::string& objectPath);
 
+    /**
+     * Erases all entries
+     */
+    void eraseAll();
+
   private:
     /**
      * The callback for an interfaces added signal

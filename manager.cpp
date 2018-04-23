@@ -84,6 +84,17 @@ void Manager::erase(const std::string& objectPath)
     }
 }
 
+void Manager::eraseAll()
+{
+    auto iter = entries.begin();
+    while (iter != entries.end())
+    {
+        auto entry = iter;
+        ++iter;
+        entries.erase(entry);
+    }
+}
+
 void Manager::addInterface(const std::string& objectPath, InterfaceType type,
                            std::experimental::any& object)
 {
