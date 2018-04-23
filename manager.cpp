@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "config.h"
+#include "delete.hpp"
 #include "manager.hpp"
 #include "policy_find.hpp"
 
@@ -68,6 +69,19 @@ void Manager::create(const std::string& objectPath,
 #ifdef USE_POLICY_INTERFACE
     createPolicyInterface(objectPath, properties);
 #endif
+
+    // Emits the interfaces added signal.
+    createDeleteInterface(objectPath);
+}
+
+void Manager::erase(const std::string& objectPath)
+{
+    auto entry = entries.find(getEntryID(objectPath));
+
+    if (entry != entries.end())
+    {
+        entries.erase(entry);
+    }
 }
 
 void Manager::addInterface(const std::string& objectPath, InterfaceType type,
@@ -88,6 +102,14 @@ void Manager::addInterface(const std::string& objectPath, InterfaceType type,
     }
 }
 
+void Manager::createDeleteInterface(const std::string& objectPath)
+{
+    std::experimental::any object =
+        std::make_shared<Delete>(bus, objectPath, *this, false);
+
+    addInterface(objectPath, InterfaceType::DELETE, object);
+}
+
 #ifdef USE_POLICY_INTERFACE
 void Manager::createPolicyInterface(const std::string& objectPath,
                                     const DbusPropertyMap& properties)
@@ -98,8 +120,6 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 
     object->eventID(std::get<policy::EIDField>(values));
     object->description(std::get<policy::MsgField>(values));
-
-    object->emit_object_added();
 
     std::experimental::any anyObject = object;
 
