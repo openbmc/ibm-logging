@@ -29,12 +29,7 @@ Manager::Manager(sdbusplus::bus::bus& bus) :
              sdbusplus::bus::match::rules::interfacesAdded() +
                  sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
              std::bind(std::mem_fn(&Manager::interfaceAdded), this,
-                       std::placeholders::_1)),
-    removeMatch(bus,
-                sdbusplus::bus::match::rules::interfacesRemoved() +
-                    sdbusplus::bus::match::rules::path_namespace(LOGGING_PATH),
-                std::bind(std::mem_fn(&Manager::interfaceRemoved), this,
-                          std::placeholders::_1))
+                       std::placeholders::_1))
 #ifdef USE_POLICY_INTERFACE
     ,
     policies(POLICY_JSON_PATH)
@@ -154,30 +149,6 @@ void Manager::interfaceAdded(sdbusplus::message::message& msg)
     if (propertyMap != interfaces.end())
     {
         create(path, propertyMap->second);
-    }
-}
-
-void Manager::interfaceRemoved(sdbusplus::message::message& msg)
-{
-    sdbusplus::message::object_path path;
-    DbusInterfaceList interfaces;
-
-    msg.read(path, interfaces);
-
-    // If the Logging.Entry interface was removed, then remove
-    // our object
-
-    auto i = std::find(interfaces.begin(), interfaces.end(), LOGGING_IFACE);
-
-    if (i != interfaces.end())
-    {
-        auto id = getEntryID(path);
-
-        auto entry = entries.find(id);
-        if (entry != entries.end())
-        {
-            entries.erase(entry);
-        }
     }
 }
 }
