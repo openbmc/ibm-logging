@@ -70,6 +70,24 @@ void Manager::create(const std::string& objectPath,
 #endif
 }
 
+void Manager::addInterface(const std::string& objectPath, InterfaceType type,
+                           std::experimental::any& object)
+{
+    auto id = getEntryID(objectPath);
+    auto entry = entries.find(id);
+
+    if (entry == entries.end())
+    {
+        InterfaceMap interfaces;
+        interfaces.emplace(type, object);
+        entries.emplace(id, std::move(interfaces));
+    }
+    else
+    {
+        entry->second.emplace(type, object);
+    }
+}
+
 #ifdef USE_POLICY_INTERFACE
 void Manager::createPolicyInterface(const std::string& objectPath,
                                     const DbusPropertyMap& properties)
@@ -83,19 +101,9 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 
     object->emit_object_added();
 
-    auto id = getEntryID(objectPath);
-    auto entry = entries.find(id);
+    std::experimental::any anyObject = object;
 
-    if (entry == entries.end())
-    {
-        InterfaceMap interfaces;
-        interfaces.emplace(InterfaceType::POLICY, object);
-        entries.emplace(id, interfaces);
-    }
-    else
-    {
-        entry->second.emplace(InterfaceType::POLICY, object);
-    }
+    addInterface(objectPath, InterfaceType::POLICY, anyObject);
 }
 #endif
 

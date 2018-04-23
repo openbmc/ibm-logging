@@ -106,6 +106,16 @@ class Manager
     }
 
     /**
+     * Adds an interface object to the entries map
+     *
+     * @param[in] objectPath - the object path of the log
+     * @param[in] type - the interface type being added
+     * @param[in] object - the interface object
+     */
+    void addInterface(const std::string& objectPath, InterfaceType type,
+                      std::experimental::any& object);
+
+    /**
      * The sdbusplus bus object
      */
     sdbusplus::bus::bus& bus;
