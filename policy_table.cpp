@@ -86,14 +86,18 @@ optional_ns::optional<DetailsReference>
 
     if (policy != policies.end())
     {
-        // Not all policy entries have a modifier defined, so if it is
-        // empty that will return as a match.
-
+        // If there is no exact modifier match, then look for an entry with
+        // an empty modifier - it is the catch-all for that error.
         auto details = std::find_if(
             policy->second.begin(), policy->second.end(),
-            [&modifier](const auto& d) {
-                return d.modifier.empty() || (modifier == d.modifier);
-            });
+            [&modifier](const auto& d) { return modifier == d.modifier; });
+
+        if ((details == policy->second.end()) && !modifier.empty())
+        {
+            details =
+                std::find_if(policy->second.begin(), policy->second.end(),
+                             [](const auto& d) { return d.modifier.empty(); });
+        }
 
         if (details != policy->second.end())
         {
