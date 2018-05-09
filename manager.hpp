@@ -66,6 +66,16 @@ class Manager
     void interfaceAdded(sdbusplus::message::message& msg);
 
     /**
+     * The callback for an interfaces removed signal
+     *
+     * Removes the IBM interfaces for the log entry
+     * that was just removed.
+     *
+     * @param[in] msg - the sdbusplus message
+     */
+    void interfaceRemoved(sdbusplus::message::message& msg);
+
+    /**
      * Creates the IBM interfaces for all existing error log
      * entries.
      */
@@ -134,6 +144,11 @@ class Manager
      * The match object for interfacesAdded
      */
     sdbusplus::bus::match_t addMatch;
+
+    /**
+     * The match object for interfacesRemoved
+     */
+    sdbusplus::bus::match_t removeMatch;
 
     using EntryID = uint32_t;
     using InterfaceMap = std::map<InterfaceType, std::experimental::any>;
