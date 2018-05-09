@@ -84,11 +84,6 @@ void Manager::erase(const std::string& objectPath)
     }
 }
 
-void Manager::eraseAll()
-{
-    entries.clear();
-}
-
 void Manager::addInterface(const std::string& objectPath, InterfaceType type,
                            std::experimental::any& object)
 {

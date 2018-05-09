@@ -15,7 +15,6 @@
  */
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/manager.hpp>
-#include "delete_all.hpp"
 #include "manager.hpp"
 #include "config.h"
 
@@ -26,7 +25,6 @@ int main()
     sdbusplus::server::manager::manager objManager(bus, LOGGING_PATH);
 
     ibm::logging::Manager manager{bus};
-    ibm::logging::DeleteAll da{bus, LOGGING_PATH, manager};
 
     bus.request_name(IBM_LOGGING_BUSNAME);
 
