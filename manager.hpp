@@ -42,13 +42,6 @@ class Manager
      */
     explicit Manager(sdbusplus::bus::bus& bus);
 
-    /**
-     * Deletes the entry with the specified path
-     *
-     * @param[in] objectPath - the entry object path
-     */
-    void erase(const std::string& objectPath);
-
   private:
     /**
      * The callback for an interfaces added signal
@@ -98,14 +91,6 @@ class Manager
     void createPolicyInterface(const std::string& objectPath,
                                const DbusPropertyMap& properties);
 #endif
-
-    /**
-     * Creates the Delete interface for a single error log
-     * and saves it in the list of interfaces.
-     *
-     * @param[in] objectPath - object path of the error log
-     */
-    void createDeleteInterface(const std::string& objectPath);
 
     /**
      * Returns the entry ID for a log
