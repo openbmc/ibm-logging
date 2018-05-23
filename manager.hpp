@@ -124,6 +124,47 @@ class Manager
                       const DbusInterfaceMap& interfaces);
 
     /**
+     * Returns the error log timestamp property value from
+     * the passed in map of all interfaces and property names/values
+     * on an error log D-Bus object.
+     *
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log.
+     *
+     * @return uint64_t - the timestamp
+     */
+    uint64_t getLogTimestamp(const DbusInterfaceMap& interfaces);
+
+    /**
+     * Returns the filesystem directory to use for persisting
+     * information about a particular error log.
+     *
+     * @param[in] id - the error log ID
+     * @return path - the directory path
+     */
+    std::experimental::filesystem::path getSaveDir(EntryID id);
+
+    /**
+     * Returns the directory to use to save the callout information in
+     *
+     * @param[in] id - the error log ID
+     *
+     * @return path - the directory path
+     */
+    std::experimental::filesystem::path getCalloutSaveDir(EntryID id);
+
+    /**
+     * Returns the D-Bus object path to use for a callout D-Bus object.
+     *
+     * @param[in] objectPath - the object path for the error log
+     * @param[in] calloutNum - the callout instance number
+     *
+     * @return path - the object path to use for a callout object
+     */
+    std::string getCalloutObjectPath(const std::string& objectPath,
+                                     uint32_t calloutNum);
+
+    /**
      * Creates the IBM policy interface for a single error log
      * and saves it in the list of interfaces.
      *
@@ -135,6 +176,25 @@ class Manager
     void createPolicyInterface(const std::string& objectPath,
                                const DbusPropertyMap& properties);
 #endif
+
+    /**
+     * Creates D-Bus objects for any callouts in an error log
+     * that map to an inventory object with an Asset interface.
+     *
+     * The created object will also host the Asset interface.
+     *
+     * A callout object path would look like:
+     * /xyz/openbmc_project/logging/entry/5/callouts/0.
+     *
+     * Any objects created are serialized so the asset information
+     * can always be restored.
+     *
+     * @param[in] objectPath - object path of the error log
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log.
+     */
+    void createCalloutObjects(const std::string& objectPath,
+                              const DbusInterfaceMap& interfaces);
 
     /**
      * Returns the entry ID for a log
