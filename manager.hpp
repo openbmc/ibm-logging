@@ -47,6 +47,10 @@ class Manager
     using InterfaceMap = std::map<InterfaceType, std::experimental::any>;
     using EntryMap = std::map<EntryID, InterfaceMap>;
 
+    using ObjectList = std::vector<std::experimental::any>;
+    using InterfaceMapMulti = std::map<InterfaceType, ObjectList>;
+    using EntryMapMulti = std::map<EntryID, InterfaceMapMulti>;
+
     /**
      * Deletes the entry and any child entries with
      * the specified ID.
@@ -128,6 +132,21 @@ class Manager
                       std::experimental::any& object);
 
     /**
+     * Adds an interface to a child object, which is an object that
+     * relates to the main ...logging/entry/X object but has a different path.
+     * The object is stored in the childEntries map.
+     *
+     * There can be multiple instances of a child object per type per
+     * logging object.
+     *
+     * @param[in] objectPath - the object path of the log
+     * @param[in] type - the interface type being added.
+     * @param[in] object - the interface object
+     */
+    void addChildInterface(const std::string& objectPath, InterfaceType type,
+                           std::experimental::any& object);
+
+    /**
      * The sdbusplus bus object
      */
     sdbusplus::bus::bus& bus;
@@ -147,6 +166,17 @@ class Manager
      * There may be multiple interfaces per ID.
      */
     EntryMap entries;
+
+    /**
+     * A map of the error log IDs to their interface objects which
+     * are children of the logging objects.
+     *
+     * These objects have the same lifespan as their parent objects.
+     *
+     * There may be multiple interfaces per ID, and also multiple
+     * interface instances per interface type.
+     */
+    EntryMapMulti childEntries;
 
 #ifdef USE_POLICY_INTERFACE
     /**
