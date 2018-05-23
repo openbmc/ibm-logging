@@ -22,6 +22,18 @@ using DbusInterfaceList = std::vector<DbusInterface>;
 using ObjectValueTree =
     std::map<sdbusplus::message::object_path, DbusInterfaceMap>;
 
+/**
+ * Returns the managed objects for an object path and service
+ *
+ * Returns an empty map if there are any failures.
+ *
+ * @param[in] bus - the D-Bus object
+ * @param[in] service - the D-Bus service name
+ * @param[in] objPath - the D-Bus object path
+ *
+ * @return ObjectValueTree - A map of object paths to their
+ *                           interfaces and properties.
+ */
 ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
                                   const std::string& service,
                                   const std::string& objPath);
