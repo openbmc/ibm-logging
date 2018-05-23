@@ -86,14 +86,42 @@ class Manager
     void createAll();
 
     /**
-     * Creates the IBM interface(s) for a single error log.
+     * Creates the IBM interface(s) for a single new error log.
+     *
+     * Any interfaces that require serialization will be created
+     * and serialized here.
      *
      * @param[in] objectPath - object path of the error log
-     * @param[in] properties - the xyz.openbmc_project.Logging.Entry
-     *                         properties
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log
      */
     void create(const std::string& objectPath,
-                const DbusPropertyMap& properties);
+                const DbusInterfaceMap& interfaces);
+
+    /**
+     * Creates the IBM interface(s) for a single error log after
+     * the application is restarted.
+     *
+     * Interfaces that were persisted will be restored from their
+     * previously saved filesystem data.
+     *
+     * @param[in] objectPath - object path of the error log
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log
+     */
+    void createWithRestore(const std::string& objectPath,
+                           const DbusInterfaceMap& interfaces);
+
+    /**
+     * Creates the IBM interfaces for a single error log that
+     * do not persist across app restarts.
+     *
+     * @param[in] objectPath - object path of the error log
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log
+     */
+    void createObject(const std::string& objectPath,
+                      const DbusInterfaceMap& interfaces);
 
     /**
      * Creates the IBM policy interface for a single error log
