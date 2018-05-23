@@ -86,5 +86,12 @@ AC_ARG_VAR(POLICY_JSON_PATH, [The path to the policy json file])
 AS_IF([test "x$POLICY_JSON_PATH" == "x"], [POLICY_JSON_PATH="/usr/share/ibm-logging/policy.json"])
 AC_DEFINE_UNQUOTED([POLICY_JSON_PATH], ["$POLICY_JSON_PATH"], [The path to the policy json file on the BMC])
 
+AC_ARG_VAR(CALLOUT_CLASS_VERSION,
+           [Callout class version to register with Cereal])
+AS_IF([test "x$CALLOUT_CLASS_VERSION" == "x"],
+      [CALLOUT_CLASS_VERSION=1])
+AC_DEFINE_UNQUOTED([CALLOUT_CLASS_VERSION], [$CALLOUT_CLASS_VERSION],
+                   [Callout Class version to register with Cereal])
+
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
