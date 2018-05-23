@@ -72,6 +72,13 @@ void Manager::create(const std::string& objectPath,
 
 void Manager::erase(EntryID id)
 {
+    auto childEntry = childEntries.find(id);
+
+    if (childEntry != childEntries.end())
+    {
+        childEntries.erase(childEntry);
+    }
+
     auto entry = entries.find(id);
 
     if (entry != entries.end())
@@ -95,6 +102,40 @@ void Manager::addInterface(const std::string& objectPath, InterfaceType type,
     else
     {
         entry->second.emplace(type, object);
+    }
+}
+
+void Manager::addChildInterface(const std::string& objectPath,
+                                InterfaceType type,
+                                std::experimental::any& object)
+{
+    auto id = getEntryID(objectPath);
+    auto entry = childEntries.find(id);
+
+    // childEntries is:
+    // A map of error log entry IDs to:
+    //  a map of interface types to:
+    //    a vector of interface objects
+
+    if (entry == childEntries.end())
+    {
+        ObjectList objects{object};
+        InterfaceMapMulti interfaces;
+        interfaces.emplace(type, std::move(objects));
+        childEntries.emplace(id, std::move(interfaces));
+    }
+    else
+    {
+        auto i = entry->second.find(type);
+        if (i == entry->second.end())
+        {
+            ObjectList objects{objects};
+            entry->second.emplace(type, objects);
+        }
+        else
+        {
+            i->second.emplace_back(object);
+        }
     }
 }
 
