@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "callout.hpp"
 #include "config.h"
 #include "manager.hpp"
 #include "policy_find.hpp"
@@ -21,6 +22,8 @@ namespace ibm
 {
 namespace logging
 {
+
+namespace fs = std::experimental::filesystem;
 
 Manager::Manager(sdbusplus::bus::bus& bus) :
     bus(bus),
@@ -73,8 +76,7 @@ void Manager::create(const std::string& objectPath,
 {
     createObject(objectPath, interfaces);
 
-    // TODO
-    // createCalloutObjects(objectPath, interfaces);
+    createCalloutObjects(objectPath, interfaces);
 }
 
 void Manager::createObject(const std::string& objectPath,
@@ -88,6 +90,7 @@ void Manager::createObject(const std::string& objectPath,
 
 void Manager::erase(EntryID id)
 {
+    fs::remove_all(getSaveDir(id));
     childEntries.erase(id);
     entries.erase(id);
 }
@@ -163,6 +166,77 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 }
 #endif
 
+void Manager::createCalloutObjects(const std::string& objectPath,
+                                   const DbusInterfaceMap& interfaces)
+{
+    // Use the associations property in the org.openbmc.Associations
+    // interface to find any callouts.  Then grab all properties on
+    // the Asset interface for that object in the inventory to use
+    // in our callout objects.
+
+    auto associations = interfaces.find(ASSOC_IFACE);
+    if (associations == interfaces.end())
+    {
+        return;
+    }
+
+    const auto& properties = associations->second;
+    auto assocProperty = properties.find("associations");
+    auto assocValue = assocProperty->second.get<AssociationsPropertyType>();
+
+    auto id = getEntryID(objectPath);
+    auto calloutNum = 0;
+    DbusSubtree subtree;
+
+    for (const auto& association : assocValue)
+    {
+        if (std::get<forwardPos>(association) != "callout")
+        {
+            continue;
+        }
+
+        auto callout = std::get<endpointPos>(association);
+
+        if (subtree.empty())
+        {
+            subtree = getSubtree(bus, "/", 0, ASSET_IFACE);
+            if (subtree.empty())
+            {
+                break;
+            }
+        }
+
+        auto service = getService(callout, ASSET_IFACE, subtree);
+        if (service.empty())
+        {
+            continue;
+        }
+
+        auto properties = getAllProperties(bus, service, callout, ASSET_IFACE);
+        if (properties.empty())
+        {
+            continue;
+        }
+
+        auto calloutPath = getCalloutObjectPath(objectPath, calloutNum);
+
+        auto object =
+            std::make_shared<Callout>(bus, calloutPath, callout, calloutNum,
+                                      getLogTimestamp(interfaces), properties);
+
+        auto dir = getCalloutSaveDir(id);
+        if (!fs::exists(dir))
+        {
+            fs::create_directories(dir);
+        }
+        object->serialize(dir);
+
+        std::experimental::any anyObject = object;
+        addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
+        calloutNum++;
+    }
+}
+
 void Manager::interfaceAdded(sdbusplus::message::message& msg)
 {
     sdbusplus::message::object_path path;
@@ -176,6 +250,37 @@ void Manager::interfaceAdded(sdbusplus::message::message& msg)
     {
         create(path, interfaces);
     }
+}
+
+uint64_t Manager::getLogTimestamp(const DbusInterfaceMap& interfaces)
+{
+    auto interface = interfaces.find(LOGGING_IFACE);
+    if (interface != interfaces.end())
+    {
+        auto property = interface->second.find("Timestamp");
+        if (property != interface->second.end())
+        {
+            return property->second.get<uint64_t>();
+        }
+    }
+
+    return 0;
+}
+
+fs::path Manager::getSaveDir(EntryID id)
+{
+    return fs::path{ERRLOG_PERSIST_PATH} / std::to_string(id);
+}
+
+fs::path Manager::getCalloutSaveDir(EntryID id)
+{
+    return getSaveDir(id) / "callouts";
+}
+
+std::string Manager::getCalloutObjectPath(const std::string& objectPath,
+                                          uint32_t calloutNum)
+{
+    return fs::path{objectPath} / "callouts" / std::to_string(calloutNum);
 }
 
 void Manager::interfaceRemoved(sdbusplus::message::message& msg)
