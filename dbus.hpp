@@ -12,8 +12,22 @@ namespace logging
 
 using DbusInterface = std::string;
 using DbusProperty = std::string;
+
+static constexpr auto forwardPos = 0;
+static constexpr auto reversePos = 1;
+static constexpr auto endpointPos = 2;
+using AssociationsPropertyType =
+    std::vector<std::tuple<std::string, std::string, std::string>>;
+
+static constexpr auto calloutPos = 0;
+static constexpr auto snPos = 1;
+static constexpr auto pnPos = 2;
+using Callouts = std::tuple<std::string, std::string, std::string>;
+using CalloutList = std::vector<Callouts>;
+
 using Value = sdbusplus::message::variant<bool, uint32_t, uint64_t, std::string,
-                                          std::vector<std::string>>;
+                                          std::vector<std::string>,
+                                          AssociationsPropertyType>;
 
 using DbusPropertyMap = std::map<DbusProperty, Value>;
 using DbusInterfaceMap = std::map<DbusInterface, DbusPropertyMap>;

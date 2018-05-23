@@ -76,6 +76,10 @@ AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
           [The xyz logging busname])
 AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging",
           [The IBM log manager DBus busname to own])
+AC_DEFINE(ASSOC_IFACE, "org.openbmc.Associations",
+          [The associations interface])
+AC_DEFINE(ASSET_IFACE, "xyz.openbmc_project.Inventory.Decorator.Asset",
+          [The asset interface])
 
 AC_DEFINE(DEFAULT_POLICY_EID, "None",
           [The default event ID to use])
@@ -85,6 +89,12 @@ AC_DEFINE(DEFAULT_POLICY_MSG, "An internal BMC error occurred",
 AC_ARG_VAR(POLICY_JSON_PATH, [The path to the policy json file])
 AS_IF([test "x$POLICY_JSON_PATH" == "x"], [POLICY_JSON_PATH="/usr/share/ibm-logging/policy.json"])
 AC_DEFINE_UNQUOTED([POLICY_JSON_PATH], ["$POLICY_JSON_PATH"], [The path to the policy json file on the BMC])
+
+AC_ARG_VAR(ERRLOG_PERSIST_PATH, [Path to save errors in])
+AS_IF([test "x$ERRLOG_PERSIST_PATH" == "x"], \
+    [ERRLOG_PERSIST_PATH="/var/lib/ibm-logging/errors"])
+AC_DEFINE_UNQUOTED([ERRLOG_PERSIST_PATH], ["$ERRLOG_PERSIST_PATH"], \
+    [Path to save errors in])
 
 AC_ARG_VAR(CALLOUT_CLASS_VERSION,
            [Callout class version to register with Cereal])
