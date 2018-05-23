@@ -25,6 +25,9 @@ AC_PATH_PROG([SDBUSPLUSPLUS], [sdbus++])
 AC_CHECK_HEADER(nlohmann/json.hpp, ,
                 [AC_MSG_ERROR([Could not find nlohmann/json.hpp... nlohmann/json package required])])
 
+AC_CHECK_HEADER(cereal/archives/binary.hpp, ,
+                [AC_MSG_ERROR([Could not find cereal/archives/binary.hpp... cereal package required])])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX_14([noext])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
@@ -85,6 +88,13 @@ AC_DEFINE(DEFAULT_POLICY_MSG, "An internal BMC error occurred",
 AC_ARG_VAR(POLICY_JSON_PATH, [The path to the policy json file])
 AS_IF([test "x$POLICY_JSON_PATH" == "x"], [POLICY_JSON_PATH="/usr/share/ibm-logging/policy.json"])
 AC_DEFINE_UNQUOTED([POLICY_JSON_PATH], ["$POLICY_JSON_PATH"], [The path to the policy json file on the BMC])
+
+AC_ARG_VAR(CALLOUT_CLASS_VERSION,
+           [Callout class version to register with Cereal])
+AS_IF([test "x$CALLOUT_CLASS_VERSION" == "x"],
+      [CALLOUT_CLASS_VERSION=1])
+AC_DEFINE_UNQUOTED([CALLOUT_CLASS_VERSION], [$CALLOUT_CLASS_VERSION],
+                   [Callout Class version to register with Cereal])
 
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
