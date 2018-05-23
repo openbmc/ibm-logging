@@ -43,6 +43,18 @@ class Manager
     explicit Manager(sdbusplus::bus::bus& bus);
 
   private:
+    using EntryID = uint32_t;
+    using InterfaceMap = std::map<InterfaceType, std::experimental::any>;
+    using EntryMap = std::map<EntryID, InterfaceMap>;
+
+    /**
+     * Deletes the entry and any child entries with
+     * the specified ID.
+     *
+     * @param[in] id - the entry ID
+     */
+    void erase(EntryID id);
+
     /**
      * The callback for an interfaces added signal
      *
@@ -129,10 +141,6 @@ class Manager
      * The match object for interfacesRemoved
      */
     sdbusplus::bus::match_t removeMatch;
-
-    using EntryID = uint32_t;
-    using InterfaceMap = std::map<InterfaceType, std::experimental::any>;
-    using EntryMap = std::map<EntryID, InterfaceMap>;
 
     /**
      * A map of the error log IDs to their IBM interface objects.

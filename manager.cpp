@@ -70,6 +70,16 @@ void Manager::create(const std::string& objectPath,
 #endif
 }
 
+void Manager::erase(EntryID id)
+{
+    auto entry = entries.find(id);
+
+    if (entry != entries.end())
+    {
+        entries.erase(entry);
+    }
+}
+
 void Manager::addInterface(const std::string& objectPath, InterfaceType type,
                            std::experimental::any& object)
 {
@@ -140,13 +150,7 @@ void Manager::interfaceRemoved(sdbusplus::message::message& msg)
 
     if (i != interfaces.end())
     {
-        auto id = getEntryID(path);
-
-        auto entry = entries.find(id);
-        if (entry != entries.end())
-        {
-            entries.erase(entry);
-        }
+        erase(getEntryID(path));
     }
 }
 }
