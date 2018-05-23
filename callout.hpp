@@ -100,7 +100,43 @@ class Callout : public CalloutObject
         timestamp = ts;
     }
 
+    /**
+     * Serializes the class instance into a file in the
+     * directory passed in.  The filename will match the
+     * ID value passed into the constructor.
+     *
+     * @param[in] - the directory to save the file  in.
+     */
+    void serialize(const fs::path& dir);
+
+    /**
+     * Loads the class members in from a file written by a previous
+     * call to serialize().  The filename it uses is the ID
+     * value passed into the constructor in the directory
+     * passed to this function.
+     *
+     * @param[in] dir - the directory to look for the file in
+     *
+     * @return bool - true if the deserialization was successful,
+     *                false if it wasn't
+     */
+    bool deserialize(const fs::path& dir);
+
   private:
+    /**
+     * Returns the fully qualified filename to use for the serialization
+     * data.  The file is the ID value, like "0", in the base directory
+     * passed in.
+     *
+     * @param[in] baseDir - the directory the file will be in
+     *
+     * @return path - the filename
+     */
+    inline auto getFilePath(const fs::path& baseDir)
+    {
+        return baseDir / std::to_string(entryID);
+    }
+
     /**
      * The unique identifier for the callout, as error logs can have
      * multiple callouts.  They start at 0.
