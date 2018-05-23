@@ -197,6 +197,18 @@ class Manager
                               const DbusInterfaceMap& interfaces);
 
     /**
+     * Restores callout objects for a particular error log that
+     * have previously been saved by reading their data out of
+     * the filesystem using Cereal.
+     *
+     * @param[in] objectPath - object path of the error log
+     * @param[in] interfaces - map of all interfaces and properties
+     *                         on a phosphor-logging error log.
+     */
+    void restoreCalloutObjects(const std::string& objectPath,
+                               const DbusInterfaceMap& interfaces);
+
+    /**
      * Returns the entry ID for a log
      *
      * @param[in] objectPath - the object path of the log

@@ -68,8 +68,7 @@ void Manager::createWithRestore(const std::string& objectPath,
 {
     createObject(objectPath, interfaces);
 
-    // TODO
-    // restoreCalloutObjects(objectPath, interfaces);
+    restoreCalloutObjects(objectPath, interfaces);
 }
 
 void Manager::create(const std::string& objectPath,
@@ -237,6 +236,40 @@ void Manager::createCalloutObjects(const std::string& objectPath,
         std::experimental::any anyObject = object;
         addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
         calloutNum++;
+    }
+}
+
+void Manager::restoreCalloutObjects(const std::string& objectPath,
+                                    const DbusInterfaceMap& interfaces)
+{
+    auto saveDir = getCalloutSaveDir(getEntryID(objectPath));
+
+    if (!fs::exists(saveDir))
+    {
+        return;
+    }
+
+    size_t id;
+    for (auto& f : fs::directory_iterator(saveDir))
+    {
+        try
+        {
+            id = std::stoul(f.path().filename());
+        }
+        catch (std::exception& e)
+        {
+            continue;
+        }
+
+        auto path = getCalloutObjectPath(objectPath, id);
+        auto callout = std::make_shared<Callout>(bus, path, id,
+                                                 getLogTimestamp(interfaces));
+        if (callout->deserialize(saveDir))
+        {
+            callout->emit_object_added();
+            std::experimental::any anyObject = callout;
+            addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
+        }
     }
 }
 
