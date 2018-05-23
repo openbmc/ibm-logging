@@ -19,6 +19,9 @@ PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\
     AC_MSG_ERROR(["Requires openbmc/phosphor-logging package."]))
 
+#REMOVE ME
+AC_PATH_PROG([SDBUSPLUSPLUS], [sdbus++])
+
 AC_CHECK_HEADER(nlohmann/json.hpp, ,
                 [AC_MSG_ERROR([Could not find nlohmann/json.hpp... nlohmann/json package required])])
 
