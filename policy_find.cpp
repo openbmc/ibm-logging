@@ -158,7 +158,7 @@ auto getSearchModifier(const DbusPropertyMap& properties)
         {
             using namespace phosphor::logging;
             log<level::ERR>("Invalid PROCEDURE value found",
-                            entry("PROCEDURE=%s", *mod));
+                            entry("PROCEDURE=%s", mod->c_str()));
         }
     }
 
