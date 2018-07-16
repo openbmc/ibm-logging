@@ -25,6 +25,8 @@ namespace logging
 {
 
 namespace fs = std::experimental::filesystem;
+using namespace phosphor::logging;
+using sdbusplus::exception::SdBusError;
 
 Manager::Manager(sdbusplus::bus::bus& bus) :
     bus(bus),
@@ -48,18 +50,26 @@ Manager::Manager(sdbusplus::bus::bus& bus) :
 
 void Manager::createAll()
 {
-    auto objects = getManagedObjects(bus, LOGGING_BUSNAME, LOGGING_PATH);
-
-    for (const auto& object : objects)
+    try
     {
-        const auto& interfaces = object.second;
+        auto objects = getManagedObjects(bus, LOGGING_BUSNAME, LOGGING_PATH);
 
-        auto propertyMap = interfaces.find(LOGGING_IFACE);
-
-        if (propertyMap != interfaces.end())
+        for (const auto& object : objects)
         {
-            createWithRestore(object.first, interfaces);
+            const auto& interfaces = object.second;
+
+            auto propertyMap = interfaces.find(LOGGING_IFACE);
+
+            if (propertyMap != interfaces.end())
+            {
+                createWithRestore(object.first, interfaces);
+            }
         }
+    }
+    catch (const SdBusError& e)
+    {
+        log<level::ERR>("sdbusplus error getting logging managed objects",
+                        entry("ERROR=%s", e.what()));
     }
 }
 
@@ -190,50 +200,58 @@ void Manager::createCalloutObjects(const std::string& objectPath,
 
     for (const auto& association : assocValue)
     {
-        if (std::get<forwardPos>(association) != "callout")
+        try
         {
-            continue;
-        }
+            if (std::get<forwardPos>(association) != "callout")
+            {
+                continue;
+            }
 
-        auto callout = std::get<endpointPos>(association);
+            auto callout = std::get<endpointPos>(association);
 
-        if (subtree.empty())
-        {
-            subtree = getSubtree(bus, "/", 0, ASSET_IFACE);
             if (subtree.empty())
             {
-                break;
+                subtree = getSubtree(bus, "/", 0, ASSET_IFACE);
+                if (subtree.empty())
+                {
+                    break;
+                }
             }
-        }
 
-        auto service = getService(callout, ASSET_IFACE, subtree);
-        if (service.empty())
+            auto service = getService(callout, ASSET_IFACE, subtree);
+            if (service.empty())
+            {
+                continue;
+            }
+
+            auto properties =
+                getAllProperties(bus, service, callout, ASSET_IFACE);
+            if (properties.empty())
+            {
+                continue;
+            }
+
+            auto calloutPath = getCalloutObjectPath(objectPath, calloutNum);
+
+            auto object = std::make_shared<Callout>(
+                bus, calloutPath, callout, calloutNum,
+                getLogTimestamp(interfaces), properties);
+
+            auto dir = getCalloutSaveDir(id);
+            if (!fs::exists(dir))
+            {
+                fs::create_directories(dir);
+            }
+            object->serialize(dir);
+
+            std::experimental::any anyObject = object;
+            addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
+            calloutNum++;
+        }
+        catch (const SdBusError& e)
         {
-            continue;
+            log<level::ERR>("sdbusplus exception", entry("ERROR=%s", e.what()));
         }
-
-        auto properties = getAllProperties(bus, service, callout, ASSET_IFACE);
-        if (properties.empty())
-        {
-            continue;
-        }
-
-        auto calloutPath = getCalloutObjectPath(objectPath, calloutNum);
-
-        auto object =
-            std::make_shared<Callout>(bus, calloutPath, callout, calloutNum,
-                                      getLogTimestamp(interfaces), properties);
-
-        auto dir = getCalloutSaveDir(id);
-        if (!fs::exists(dir))
-        {
-            fs::create_directories(dir);
-        }
-        object->serialize(dir);
-
-        std::experimental::any anyObject = object;
-        addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
-        calloutNum++;
     }
 }
 
@@ -256,7 +274,6 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
         }
         catch (std::exception& e)
         {
-            using namespace phosphor::logging;
             log<level::ERR>("Invalid IBM logging callout save file. Deleting",
                             entry("FILE=%s", f.path().c_str()));
             fs::remove(f.path());
