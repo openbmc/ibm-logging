@@ -38,9 +38,7 @@ test_callout_CXXFLAGS = $(test_cxxflags)
 test_callout_LDFLAGS = $(test_ldflags)
 test_callout_SOURCES = test_callout.cpp
 
-#TODO: remove ObjectPath when it merges in phosphor-dbus-interfaces
 test_callout_LDADD = \
-	$(top_builddir)/xyz/openbmc_project/Common/ObjectPath/server.o \
 	$(top_builddir)/callout.o
 
 
