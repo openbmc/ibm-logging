@@ -1,12 +1,14 @@
 #pragma once
 
+#include "config.h"
+
+#include "dbus.hpp"
+#include "interfaces.hpp"
+
 #include <experimental/any>
 #include <experimental/filesystem>
 #include <map>
 #include <sdbusplus/bus.hpp>
-#include "config.h"
-#include "dbus.hpp"
-#include "interfaces.hpp"
 #ifdef USE_POLICY_INTERFACE
 #include "policy_table.hpp"
 #endif
@@ -285,5 +287,5 @@ class Manager
     policy::Table policies;
 #endif
 };
-}
-}
+} // namespace logging
+} // namespace ibm

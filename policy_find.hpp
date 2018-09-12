@@ -26,6 +26,6 @@ using PolicyProps = std::tuple<std::string, std::string>;
  */
 PolicyProps find(const Table& policy,
                  const DbusPropertyMap& errorLogProperties);
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm

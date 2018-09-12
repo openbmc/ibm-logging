@@ -98,5 +98,5 @@ DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
                                  const std::string& service,
                                  const std::string& objPath,
                                  const std::string& interface);
-}
-}
+} // namespace logging
+} // namespace ibm

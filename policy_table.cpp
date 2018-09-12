@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "policy_table.hpp"
+
 #include <experimental/filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <phosphor-logging/log.hpp>
-#include "policy_table.hpp"
 
 namespace ibm
 {
@@ -107,6 +108,6 @@ optional_ns::optional<DetailsReference>
 
     return {};
 }
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <experimental/filesystem>
 #include "dbus.hpp"
 #include "interfaces.hpp"
+
+#include <experimental/filesystem>
 
 namespace ibm
 {
@@ -150,5 +151,5 @@ class Callout : public CalloutObject
      */
     uint64_t timestamp;
 };
-}
-}
+} // namespace logging
+} // namespace ibm

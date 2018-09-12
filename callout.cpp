@@ -12,16 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "config.h"
+
+#include "callout.hpp"
+
+#include "dbus.hpp"
+
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/string.hpp>
-#include <cereal/types/vector.hpp>
 #include <cereal/types/tuple.hpp>
+#include <cereal/types/vector.hpp>
 #include <experimental/filesystem>
 #include <fstream>
 #include <phosphor-logging/log.hpp>
-#include "callout.hpp"
-#include "config.h"
-#include "dbus.hpp"
 
 CEREAL_CLASS_VERSION(ibm::logging::Callout, CALLOUT_CLASS_VERSION);
 
@@ -181,5 +184,5 @@ bool Callout::deserialize(const fs::path& dir)
 
     return true;
 }
-}
-}
+} // namespace logging
+} // namespace ibm

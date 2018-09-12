@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "policy_find.hpp"
+
 #include <phosphor-logging/log.hpp>
 #include <sstream>
-#include "policy_find.hpp"
 
 namespace ibm
 {
@@ -189,6 +190,6 @@ PolicyProps find(const policy::Table& policy,
 
     return {policy.defaultEID(), policy.defaultMsg()};
 }
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm

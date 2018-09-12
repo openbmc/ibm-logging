@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <phosphor-logging/log.hpp>
-#include "callout.hpp"
 #include "config.h"
+
 #include "manager.hpp"
+
+#include "callout.hpp"
 #include "policy_find.hpp"
+
+#include <phosphor-logging/log.hpp>
 
 namespace ibm
 {
@@ -355,5 +358,5 @@ void Manager::interfaceRemoved(sdbusplus::message::message& msg)
         erase(getEntryID(path));
     }
 }
-}
-}
+} // namespace logging
+} // namespace ibm

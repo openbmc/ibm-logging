@@ -1,9 +1,10 @@
 #pragma once
 
+#include "config.h"
+
 #include <experimental/optional>
 #include <map>
 #include <vector>
-#include "config.h"
 
 namespace ibm
 {
@@ -130,6 +131,6 @@ class Table
      */
     PolicyMap policies;
 };
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm
