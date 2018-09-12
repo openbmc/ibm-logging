@@ -83,7 +83,7 @@ DbusPropertyMap getAllProperties(sdbusplus::bus::bus &bus,
 }
 
 DbusSubtree getSubtree(sdbusplus::bus::bus &bus, const std::string &root,
-                       size_t depth, const std::string &interface)
+                       int depth, const std::string &interface)
 {
     DbusSubtree tree;
 
