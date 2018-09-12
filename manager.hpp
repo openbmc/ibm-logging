@@ -1,12 +1,14 @@
 #pragma once
 
+#include "config.h"
+
+#include "dbus.hpp"
+#include "interfaces.hpp"
+
 #include <experimental/any>
 #include <experimental/filesystem>
 #include <map>
 #include <sdbusplus/bus.hpp>
-#include "config.h"
-#include "dbus.hpp"
-#include "interfaces.hpp"
 #ifdef USE_POLICY_INTERFACE
 #include "policy_table.hpp"
 #endif
@@ -30,17 +32,17 @@ class Manager
   public:
     Manager() = delete;
     ~Manager() = default;
-    Manager(const Manager&) = delete;
-    Manager& operator=(const Manager&) = delete;
-    Manager(Manager&&) = delete;
-    Manager& operator=(Manager&&) = delete;
+    Manager(const Manager &) = delete;
+    Manager &operator=(const Manager &) = delete;
+    Manager(Manager &&) = delete;
+    Manager &operator=(Manager &&) = delete;
 
     /**
      * Constructor
      *
      * @param[in] bus - the D-Bus bus object
      */
-    explicit Manager(sdbusplus::bus::bus& bus);
+    explicit Manager(sdbusplus::bus::bus &bus);
 
   private:
     using EntryID = uint32_t;
@@ -67,7 +69,7 @@ class Manager
      *
      * @param[in] msg - the sdbusplus message
      */
-    void interfaceAdded(sdbusplus::message::message& msg);
+    void interfaceAdded(sdbusplus::message::message &msg);
 
     /**
      * The callback for an interfaces removed signal
@@ -77,7 +79,7 @@ class Manager
      *
      * @param[in] msg - the sdbusplus message
      */
-    void interfaceRemoved(sdbusplus::message::message& msg);
+    void interfaceRemoved(sdbusplus::message::message &msg);
 
     /**
      * Creates the IBM interfaces for all existing error log
@@ -95,8 +97,8 @@ class Manager
      * @param[in] interfaces - map of all interfaces and properties
      *                         on a phosphor-logging error log
      */
-    void create(const std::string& objectPath,
-                const DbusInterfaceMap& interfaces);
+    void create(const std::string &objectPath,
+                const DbusInterfaceMap &interfaces);
 
     /**
      * Creates the IBM interface(s) for a single error log after
@@ -109,8 +111,8 @@ class Manager
      * @param[in] interfaces - map of all interfaces and properties
      *                         on a phosphor-logging error log
      */
-    void createWithRestore(const std::string& objectPath,
-                           const DbusInterfaceMap& interfaces);
+    void createWithRestore(const std::string &objectPath,
+                           const DbusInterfaceMap &interfaces);
 
     /**
      * Creates the IBM interfaces for a single error log that
@@ -120,8 +122,8 @@ class Manager
      * @param[in] interfaces - map of all interfaces and properties
      *                         on a phosphor-logging error log
      */
-    void createObject(const std::string& objectPath,
-                      const DbusInterfaceMap& interfaces);
+    void createObject(const std::string &objectPath,
+                      const DbusInterfaceMap &interfaces);
 
     /**
      * Returns the error log timestamp property value from
@@ -133,7 +135,7 @@ class Manager
      *
      * @return uint64_t - the timestamp
      */
-    uint64_t getLogTimestamp(const DbusInterfaceMap& interfaces);
+    uint64_t getLogTimestamp(const DbusInterfaceMap &interfaces);
 
     /**
      * Returns the filesystem directory to use for persisting
@@ -161,7 +163,7 @@ class Manager
      *
      * @return path - the object path to use for a callout object
      */
-    std::string getCalloutObjectPath(const std::string& objectPath,
+    std::string getCalloutObjectPath(const std::string &objectPath,
                                      uint32_t calloutNum);
 
     /**
@@ -173,8 +175,8 @@ class Manager
      *                         properties
      */
 #ifdef USE_POLICY_INTERFACE
-    void createPolicyInterface(const std::string& objectPath,
-                               const DbusPropertyMap& properties);
+    void createPolicyInterface(const std::string &objectPath,
+                               const DbusPropertyMap &properties);
 #endif
 
     /**
@@ -193,8 +195,8 @@ class Manager
      * @param[in] interfaces - map of all interfaces and properties
      *                         on a phosphor-logging error log.
      */
-    void createCalloutObjects(const std::string& objectPath,
-                              const DbusInterfaceMap& interfaces);
+    void createCalloutObjects(const std::string &objectPath,
+                              const DbusInterfaceMap &interfaces);
 
     /**
      * Restores callout objects for a particular error log that
@@ -205,8 +207,8 @@ class Manager
      * @param[in] interfaces - map of all interfaces and properties
      *                         on a phosphor-logging error log.
      */
-    void restoreCalloutObjects(const std::string& objectPath,
-                               const DbusInterfaceMap& interfaces);
+    void restoreCalloutObjects(const std::string &objectPath,
+                               const DbusInterfaceMap &interfaces);
 
     /**
      * Returns the entry ID for a log
@@ -215,7 +217,7 @@ class Manager
      *
      * @return uint32_t - the ID
      */
-    inline uint32_t getEntryID(const std::string& objectPath)
+    inline uint32_t getEntryID(const std::string &objectPath)
     {
         std::experimental::filesystem::path path(objectPath);
         return std::stoul(path.filename());
@@ -228,8 +230,8 @@ class Manager
      * @param[in] type - the interface type being added
      * @param[in] object - the interface object
      */
-    void addInterface(const std::string& objectPath, InterfaceType type,
-                      std::experimental::any& object);
+    void addInterface(const std::string &objectPath, InterfaceType type,
+                      std::experimental::any &object);
 
     /**
      * Adds an interface to a child object, which is an object that
@@ -243,13 +245,13 @@ class Manager
      * @param[in] type - the interface type being added.
      * @param[in] object - the interface object
      */
-    void addChildInterface(const std::string& objectPath, InterfaceType type,
-                           std::experimental::any& object);
+    void addChildInterface(const std::string &objectPath, InterfaceType type,
+                           std::experimental::any &object);
 
     /**
      * The sdbusplus bus object
      */
-    sdbusplus::bus::bus& bus;
+    sdbusplus::bus::bus &bus;
 
     /**
      * The match object for interfacesAdded
@@ -285,5 +287,5 @@ class Manager
     policy::Table policies;
 #endif
 };
-}
-}
+} // namespace logging
+} // namespace ibm

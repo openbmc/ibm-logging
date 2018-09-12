@@ -12,16 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "config.h"
+
+#include "callout.hpp"
+
+#include "dbus.hpp"
+
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/string.hpp>
-#include <cereal/types/vector.hpp>
 #include <cereal/types/tuple.hpp>
+#include <cereal/types/vector.hpp>
 #include <experimental/filesystem>
 #include <fstream>
 #include <phosphor-logging/log.hpp>
-#include "callout.hpp"
-#include "config.h"
-#include "dbus.hpp"
 
 CEREAL_CLASS_VERSION(ibm::logging::Callout, CALLOUT_CLASS_VERSION);
 
@@ -40,7 +43,7 @@ using namespace phosphor::logging;
  * @param[in] version - the version of the persisted data
  */
 template <class Archive>
-void save(Archive& archive, const Callout& callout, const std::uint32_t version)
+void save(Archive &archive, const Callout &callout, const std::uint32_t version)
 {
     archive(callout.id(), callout.ts(), callout.path(), callout.buildDate(),
             callout.manufacturer(), callout.model(), callout.partNumber(),
@@ -55,7 +58,7 @@ void save(Archive& archive, const Callout& callout, const std::uint32_t version)
  * @param[in] version - the version of the persisted data
  */
 template <class Archive>
-void load(Archive& archive, Callout& callout, const std::uint32_t version)
+void load(Archive &archive, Callout &callout, const std::uint32_t version)
 {
     size_t id;
     uint64_t timestamp;
@@ -78,16 +81,16 @@ void load(Archive& archive, Callout& callout, const std::uint32_t version)
     callout.serialNumber(sn);
 }
 
-Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
+Callout::Callout(sdbusplus::bus::bus &bus, const std::string &objectPath,
                  size_t id, uint64_t timestamp) :
     CalloutObject(bus, objectPath.c_str(), true),
     entryID(id), timestamp(timestamp)
 {
 }
 
-Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
-                 const std::string& inventoryPath, size_t id,
-                 uint64_t timestamp, const DbusPropertyMap& properties) :
+Callout::Callout(sdbusplus::bus::bus &bus, const std::string &objectPath,
+                 const std::string &inventoryPath, size_t id,
+                 uint64_t timestamp, const DbusPropertyMap &properties) :
     CalloutObject(bus, objectPath.c_str(), true),
     entryID(id), timestamp(timestamp)
 {
@@ -126,7 +129,7 @@ Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
     emit_object_added();
 }
 
-void Callout::serialize(const fs::path& dir)
+void Callout::serialize(const fs::path &dir)
 {
     auto path = getFilePath(dir);
     std::ofstream stream(path.c_str(), std::ios::binary);
@@ -135,7 +138,7 @@ void Callout::serialize(const fs::path& dir)
     oarchive(*this);
 }
 
-bool Callout::deserialize(const fs::path& dir)
+bool Callout::deserialize(const fs::path &dir)
 {
     auto path = getFilePath(dir);
 
@@ -158,7 +161,7 @@ bool Callout::deserialize(const fs::path& dir)
 
         iarchive(*this);
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
         log<level::ERR>(e.what());
         log<level::ERR>("Failed trying to restore a Callout object",
@@ -181,5 +184,5 @@ bool Callout::deserialize(const fs::path& dir)
 
     return true;
 }
-}
-}
+} // namespace logging
+} // namespace ibm

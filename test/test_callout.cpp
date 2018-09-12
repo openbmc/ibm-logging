@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <fstream>
-#include <gtest/gtest.h>
-#include <experimental/filesystem>
 #include "callout.hpp"
 #include "dbus.hpp"
+
+#include <experimental/filesystem>
+#include <fstream>
+
+#include <gtest/gtest.h>
 
 using namespace ibm::logging;
 

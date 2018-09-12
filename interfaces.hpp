@@ -27,5 +27,5 @@ enum class InterfaceType
     CALLOUT,
     POLICY
 };
-}
-}
+} // namespace logging
+} // namespace ibm

@@ -47,9 +47,9 @@ using DbusSubtree =
  * @return ObjectValueTree - A map of object paths to their
  *                           interfaces and properties.
  */
-ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
-                                  const std::string& service,
-                                  const std::string& objPath);
+ObjectValueTree getManagedObjects(sdbusplus::bus::bus &bus,
+                                  const std::string &service,
+                                  const std::string &objPath);
 
 /**
  * Returns the subtree for a root, depth, and interface.
@@ -63,8 +63,8 @@ ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
  * @return DbusSubtree - A map of object paths to their
  *                       services and interfaces.
  */
-DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
-                       size_t depth, const std::string& interface);
+DbusSubtree getSubtree(sdbusplus::bus::bus &bus, const std::string &root,
+                       size_t depth, const std::string &interface);
 
 /**
  * Get the D-Bus service name for the object path and interface from
@@ -78,8 +78,8 @@ DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
  *
  * @return string - the service name
  */
-DbusService getService(const std::string& objPath, const std::string& interface,
-                       const DbusSubtree& tree);
+DbusService getService(const std::string &objPath, const std::string &interface,
+                       const DbusSubtree &tree);
 
 /**
  * Returns all properties on a particular interface on a
@@ -94,9 +94,9 @@ DbusService getService(const std::string& objPath, const std::string& interface,
  *
  * @return DbusPropertyMap - The map of property names to values
  */
-DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
-                                 const std::string& service,
-                                 const std::string& objPath,
-                                 const std::string& interface);
-}
-}
+DbusPropertyMap getAllProperties(sdbusplus::bus::bus &bus,
+                                 const std::string &service,
+                                 const std::string &objPath,
+                                 const std::string &interface);
+} // namespace logging
+} // namespace ibm

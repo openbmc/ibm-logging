@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <fstream>
-#include <gtest/gtest.h>
-#include <experimental/filesystem>
-#include "policy_table.hpp"
 #include "policy_find.hpp"
+#include "policy_table.hpp"
+
+#include <experimental/filesystem>
+#include <fstream>
+
+#include <gtest/gtest.h>
 
 using namespace ibm::logging;
 namespace fs = std::experimental::filesystem;

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "config.h"
+
+#include "manager.hpp"
+
 #include <sdbusplus/bus.hpp>
 #include <sdbusplus/server/manager.hpp>
-#include "manager.hpp"
-#include "config.h"
 
 int main()
 {

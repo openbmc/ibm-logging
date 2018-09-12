@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <phosphor-logging/log.hpp>
 #include "dbus.hpp"
+
+#include <phosphor-logging/log.hpp>
 
 namespace ibm
 {
@@ -28,9 +29,9 @@ constexpr auto PROPERTY_IFACE = "org.freedesktop.DBus.Properties";
 
 using namespace phosphor::logging;
 
-ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
-                                  const std::string& service,
-                                  const std::string& objPath)
+ObjectValueTree getManagedObjects(sdbusplus::bus::bus &bus,
+                                  const std::string &service,
+                                  const std::string &objPath)
 {
     ObjectValueTree interfaces;
 
@@ -54,10 +55,10 @@ ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
     return interfaces;
 }
 
-DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
-                                 const std::string& service,
-                                 const std::string& objPath,
-                                 const std::string& interface)
+DbusPropertyMap getAllProperties(sdbusplus::bus::bus &bus,
+                                 const std::string &service,
+                                 const std::string &objPath,
+                                 const std::string &interface)
 {
     DbusPropertyMap properties;
 
@@ -81,8 +82,8 @@ DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
     return properties;
 }
 
-DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
-                       size_t depth, const std::string& interface)
+DbusSubtree getSubtree(sdbusplus::bus::bus &bus, const std::string &root,
+                       size_t depth, const std::string &interface)
 {
     DbusSubtree tree;
 
@@ -106,8 +107,8 @@ DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
     return tree;
 }
 
-DbusService getService(const std::string& objPath, const std::string& interface,
-                       const DbusSubtree& tree)
+DbusService getService(const std::string &objPath, const std::string &interface,
+                       const DbusSubtree &tree)
 {
     DbusService service;
 
@@ -115,7 +116,7 @@ DbusService getService(const std::string& objPath, const std::string& interface,
     if (services != tree.end())
     {
         auto s = std::find_if(services->second.begin(), services->second.end(),
-                              [&interface](const auto& entry) {
+                              [&interface](const auto &entry) {
                                   auto i =
                                       std::find(entry.second.begin(),
                                                 entry.second.end(), interface);
@@ -129,5 +130,5 @@ DbusService getService(const std::string& objPath, const std::string& interface,
 
     return service;
 }
-}
-}
+} // namespace logging
+} // namespace ibm

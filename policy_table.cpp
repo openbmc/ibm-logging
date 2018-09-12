@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "policy_table.hpp"
+
 #include <experimental/filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <phosphor-logging/log.hpp>
-#include "policy_table.hpp"
 
 namespace ibm
 {
@@ -29,7 +30,7 @@ namespace policy
 namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
 
-Table::Table(const std::string& jsonFile)
+Table::Table(const std::string &jsonFile)
 {
     if (fs::exists(jsonFile))
     {
@@ -42,7 +43,7 @@ Table::Table(const std::string& jsonFile)
     }
 }
 
-void Table::load(const std::string& jsonFile)
+void Table::load(const std::string &jsonFile)
 {
     try
     {
@@ -50,11 +51,11 @@ void Table::load(const std::string& jsonFile)
 
         auto json = nlohmann::json::parse(file, nullptr, true);
 
-        for (const auto& policy : json)
+        for (const auto &policy : json)
         {
             DetailsList detailsList;
 
-            for (const auto& details : policy["dtls"])
+            for (const auto &details : policy["dtls"])
             {
                 Details d;
                 d.modifier = details["mod"];
@@ -67,7 +68,7 @@ void Table::load(const std::string& jsonFile)
 
         loaded = true;
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
         log<level::ERR>("Failed loading policy table json file",
                         entry("FILE=%s", jsonFile.c_str()),
@@ -77,7 +78,7 @@ void Table::load(const std::string& jsonFile)
 }
 
 optional_ns::optional<DetailsReference>
-    Table::find(const std::string& error, const std::string& modifier) const
+    Table::find(const std::string &error, const std::string &modifier) const
 {
     // First find the entry based on the error, and then find which
     // underlying details object it is with the help of the modifier.
@@ -90,13 +91,13 @@ optional_ns::optional<DetailsReference>
         // an empty modifier - it is the catch-all for that error.
         auto details = std::find_if(
             policy->second.begin(), policy->second.end(),
-            [&modifier](const auto& d) { return modifier == d.modifier; });
+            [&modifier](const auto &d) { return modifier == d.modifier; });
 
         if ((details == policy->second.end()) && !modifier.empty())
         {
             details =
                 std::find_if(policy->second.begin(), policy->second.end(),
-                             [](const auto& d) { return d.modifier.empty(); });
+                             [](const auto &d) { return d.modifier.empty(); });
         }
 
         if (details != policy->second.end())
@@ -107,6 +108,6 @@ optional_ns::optional<DetailsReference>
 
     return {};
 }
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm

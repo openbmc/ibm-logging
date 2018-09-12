@@ -1,9 +1,10 @@
 #pragma once
 
+#include "config.h"
+
 #include <experimental/optional>
 #include <map>
 #include <vector>
-#include "config.h"
 
 namespace ibm
 {
@@ -45,17 +46,17 @@ class Table
   public:
     Table() = delete;
     ~Table() = default;
-    Table(const Table&) = default;
-    Table& operator=(const Table&) = default;
-    Table(Table&&) = default;
-    Table& operator=(Table&&) = default;
+    Table(const Table &) = default;
+    Table &operator=(const Table &) = default;
+    Table(Table &&) = default;
+    Table &operator=(Table &&) = default;
 
     /**
      * Constructor
      *
      * @param[in] jsonFile - the path to the policy JSON.
      */
-    explicit Table(const std::string& jsonFile);
+    explicit Table(const std::string &jsonFile);
 
     /**
      * Says if the JSON has been loaded successfully.
@@ -78,7 +79,7 @@ class Table
      * @return optional<DetailsReference> - the details entry
      */
     optional_ns::optional<DetailsReference>
-        find(const std::string& error, const std::string& modifier) const;
+        find(const std::string &error, const std::string &modifier) const;
 
     /**
      * The default event ID to use when a match in the table
@@ -118,7 +119,7 @@ class Table
      *
      * @param[in] jsonFile - the path to the .json file
      */
-    void load(const std::string& jsonFile);
+    void load(const std::string &jsonFile);
 
     /**
      * Reflects if the JSON was successfully loaded or not.
@@ -130,6 +131,6 @@ class Table
      */
     PolicyMap policies;
 };
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm

@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <phosphor-logging/log.hpp>
-#include "callout.hpp"
 #include "config.h"
+
 #include "manager.hpp"
+
+#include "callout.hpp"
 #include "policy_find.hpp"
+
+#include <phosphor-logging/log.hpp>
 
 namespace ibm
 {
@@ -28,7 +31,7 @@ namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
 using sdbusplus::exception::SdBusError;
 
-Manager::Manager(sdbusplus::bus::bus& bus) :
+Manager::Manager(sdbusplus::bus::bus &bus) :
     bus(bus),
     addMatch(bus,
              sdbusplus::bus::match::rules::interfacesAdded() +
@@ -54,9 +57,9 @@ void Manager::createAll()
     {
         auto objects = getManagedObjects(bus, LOGGING_BUSNAME, LOGGING_PATH);
 
-        for (const auto& object : objects)
+        for (const auto &object : objects)
         {
-            const auto& interfaces = object.second;
+            const auto &interfaces = object.second;
 
             auto propertyMap = interfaces.find(LOGGING_IFACE);
 
@@ -66,31 +69,31 @@ void Manager::createAll()
             }
         }
     }
-    catch (const SdBusError& e)
+    catch (const SdBusError &e)
     {
         log<level::ERR>("sdbusplus error getting logging managed objects",
                         entry("ERROR=%s", e.what()));
     }
 }
 
-void Manager::createWithRestore(const std::string& objectPath,
-                                const DbusInterfaceMap& interfaces)
+void Manager::createWithRestore(const std::string &objectPath,
+                                const DbusInterfaceMap &interfaces)
 {
     createObject(objectPath, interfaces);
 
     restoreCalloutObjects(objectPath, interfaces);
 }
 
-void Manager::create(const std::string& objectPath,
-                     const DbusInterfaceMap& interfaces)
+void Manager::create(const std::string &objectPath,
+                     const DbusInterfaceMap &interfaces)
 {
     createObject(objectPath, interfaces);
 
     createCalloutObjects(objectPath, interfaces);
 }
 
-void Manager::createObject(const std::string& objectPath,
-                           const DbusInterfaceMap& interfaces)
+void Manager::createObject(const std::string &objectPath,
+                           const DbusInterfaceMap &interfaces)
 {
 #ifdef USE_POLICY_INTERFACE
     auto logInterface = interfaces.find(LOGGING_IFACE);
@@ -105,8 +108,8 @@ void Manager::erase(EntryID id)
     entries.erase(id);
 }
 
-void Manager::addInterface(const std::string& objectPath, InterfaceType type,
-                           std::experimental::any& object)
+void Manager::addInterface(const std::string &objectPath, InterfaceType type,
+                           std::experimental::any &object)
 {
     auto id = getEntryID(objectPath);
     auto entry = entries.find(id);
@@ -123,9 +126,9 @@ void Manager::addInterface(const std::string& objectPath, InterfaceType type,
     }
 }
 
-void Manager::addChildInterface(const std::string& objectPath,
+void Manager::addChildInterface(const std::string &objectPath,
                                 InterfaceType type,
-                                std::experimental::any& object)
+                                std::experimental::any &object)
 {
     auto id = getEntryID(objectPath);
     auto entry = childEntries.find(id);
@@ -158,8 +161,8 @@ void Manager::addChildInterface(const std::string& objectPath,
 }
 
 #ifdef USE_POLICY_INTERFACE
-void Manager::createPolicyInterface(const std::string& objectPath,
-                                    const DbusPropertyMap& properties)
+void Manager::createPolicyInterface(const std::string &objectPath,
+                                    const DbusPropertyMap &properties)
 {
     auto values = policy::find(policies, properties);
 
@@ -176,8 +179,8 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 }
 #endif
 
-void Manager::createCalloutObjects(const std::string& objectPath,
-                                   const DbusInterfaceMap& interfaces)
+void Manager::createCalloutObjects(const std::string &objectPath,
+                                   const DbusInterfaceMap &interfaces)
 {
     // Use the associations property in the org.openbmc.Associations
     // interface to find any callouts.  Then grab all properties on
@@ -190,7 +193,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
         return;
     }
 
-    const auto& properties = associations->second;
+    const auto &properties = associations->second;
     auto assocProperty = properties.find("associations");
     auto assocValue = assocProperty->second.get<AssociationsPropertyType>();
 
@@ -198,7 +201,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
     auto calloutNum = 0;
     DbusSubtree subtree;
 
-    for (const auto& association : assocValue)
+    for (const auto &association : assocValue)
     {
         try
         {
@@ -248,15 +251,15 @@ void Manager::createCalloutObjects(const std::string& objectPath,
             addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
             calloutNum++;
         }
-        catch (const SdBusError& e)
+        catch (const SdBusError &e)
         {
             log<level::ERR>("sdbusplus exception", entry("ERROR=%s", e.what()));
         }
     }
 }
 
-void Manager::restoreCalloutObjects(const std::string& objectPath,
-                                    const DbusInterfaceMap& interfaces)
+void Manager::restoreCalloutObjects(const std::string &objectPath,
+                                    const DbusInterfaceMap &interfaces)
 {
     auto saveDir = getCalloutSaveDir(getEntryID(objectPath));
 
@@ -266,13 +269,13 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
     }
 
     size_t id;
-    for (auto& f : fs::directory_iterator(saveDir))
+    for (auto &f : fs::directory_iterator(saveDir))
     {
         try
         {
             id = std::stoul(f.path().filename());
         }
-        catch (std::exception& e)
+        catch (std::exception &e)
         {
             log<level::ERR>("Invalid IBM logging callout save file. Deleting",
                             entry("FILE=%s", f.path().c_str()));
@@ -292,7 +295,7 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
     }
 }
 
-void Manager::interfaceAdded(sdbusplus::message::message& msg)
+void Manager::interfaceAdded(sdbusplus::message::message &msg)
 {
     sdbusplus::message::object_path path;
     DbusInterfaceMap interfaces;
@@ -307,7 +310,7 @@ void Manager::interfaceAdded(sdbusplus::message::message& msg)
     }
 }
 
-uint64_t Manager::getLogTimestamp(const DbusInterfaceMap& interfaces)
+uint64_t Manager::getLogTimestamp(const DbusInterfaceMap &interfaces)
 {
     auto interface = interfaces.find(LOGGING_IFACE);
     if (interface != interfaces.end())
@@ -332,13 +335,13 @@ fs::path Manager::getCalloutSaveDir(EntryID id)
     return getSaveDir(id) / "callouts";
 }
 
-std::string Manager::getCalloutObjectPath(const std::string& objectPath,
+std::string Manager::getCalloutObjectPath(const std::string &objectPath,
                                           uint32_t calloutNum)
 {
     return fs::path{objectPath} / "callouts" / std::to_string(calloutNum);
 }
 
-void Manager::interfaceRemoved(sdbusplus::message::message& msg)
+void Manager::interfaceRemoved(sdbusplus::message::message &msg)
 {
     sdbusplus::message::object_path path;
     DbusInterfaceList interfaces;
@@ -355,5 +358,5 @@ void Manager::interfaceRemoved(sdbusplus::message::message& msg)
         erase(getEntryID(path));
     }
 }
-}
-}
+} // namespace logging
+} // namespace ibm

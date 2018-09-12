@@ -1,8 +1,9 @@
 #pragma once
 
-#include <experimental/filesystem>
 #include "dbus.hpp"
 #include "interfaces.hpp"
+
+#include <experimental/filesystem>
 
 namespace ibm
 {
@@ -24,10 +25,10 @@ class Callout : public CalloutObject
 {
   public:
     Callout() = delete;
-    Callout(const Callout&) = delete;
-    Callout& operator=(const Callout&) = delete;
-    Callout(Callout&&) = default;
-    Callout& operator=(Callout&&) = default;
+    Callout(const Callout &) = delete;
+    Callout &operator=(const Callout &) = delete;
+    Callout(Callout &&) = default;
+    Callout &operator=(Callout &&) = default;
     ~Callout() = default;
 
     /**
@@ -42,9 +43,9 @@ class Callout : public CalloutObject
      * @param[in] timestamp - timestamp when the log was created
      * @param[in] properties - the properties for the Asset interface.
      */
-    Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
-            const std::string& inventoryPath, size_t id, uint64_t timestamp,
-            const DbusPropertyMap& properties);
+    Callout(sdbusplus::bus::bus &bus, const std::string &objectPath,
+            const std::string &inventoryPath, size_t id, uint64_t timestamp,
+            const DbusPropertyMap &properties);
     /**
      * Constructor
      *
@@ -57,7 +58,7 @@ class Callout : public CalloutObject
      * @param[in] timestamp - timestamp when the log was created
      * @param[in] properties - the properties for the Asset interface.
      */
-    Callout(sdbusplus::bus::bus& bus, const std::string& objectPath, size_t id,
+    Callout(sdbusplus::bus::bus &bus, const std::string &objectPath, size_t id,
             uint64_t timestamp);
 
     /**
@@ -107,7 +108,7 @@ class Callout : public CalloutObject
      *
      * @param[in] - the directory to save the file  in.
      */
-    void serialize(const fs::path& dir);
+    void serialize(const fs::path &dir);
 
     /**
      * Loads the class members in from a file written by a previous
@@ -120,7 +121,7 @@ class Callout : public CalloutObject
      * @return bool - true if the deserialization was successful,
      *                false if it wasn't
      */
-    bool deserialize(const fs::path& dir);
+    bool deserialize(const fs::path &dir);
 
   private:
     /**
@@ -132,7 +133,7 @@ class Callout : public CalloutObject
      *
      * @return path - the filename
      */
-    inline auto getFilePath(const fs::path& baseDir)
+    inline auto getFilePath(const fs::path &baseDir)
     {
         return baseDir / std::to_string(entryID);
     }
@@ -150,5 +151,5 @@ class Callout : public CalloutObject
      */
     uint64_t timestamp;
 };
-}
-}
+} // namespace logging
+} // namespace ibm

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "policy_find.hpp"
+
 #include <phosphor-logging/log.hpp>
 #include <sstream>
-#include "policy_find.hpp"
 
 namespace ibm
 {
@@ -36,8 +37,8 @@ namespace optional_ns = std::experimental;
  * @return optional<T> - the property value
  */
 template <typename T>
-optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
-                                     const std::string& name)
+optional_ns::optional<T> getProperty(const DbusPropertyMap &properties,
+                                     const std::string &name)
 {
     auto prop = properties.find(name);
 
@@ -61,10 +62,10 @@ optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
  * @return optional<std::string> - the data value
  */
 optional_ns::optional<std::string>
-    getAdditionalDataItem(const std::vector<std::string>& additionalData,
-                          const std::string& name)
+    getAdditionalDataItem(const std::vector<std::string> &additionalData,
+                          const std::string &name)
 {
-    for (const auto& item : additionalData)
+    for (const auto &item : additionalData)
     {
         if (item.find(name + "=") != std::string::npos)
         {
@@ -90,7 +91,7 @@ optional_ns::optional<std::string>
  * @return string - the search modifier
  *                  may be empty if none found
  */
-auto getSearchModifier(const DbusPropertyMap& properties)
+auto getSearchModifier(const DbusPropertyMap &properties)
 {
     // The modifier may be one of several things within the
     // AdditionalData property.  Try them all until one
@@ -109,7 +110,7 @@ auto getSearchModifier(const DbusPropertyMap& properties)
                                                    "RAIL_NAME", "INPUT_NAME"};
 
     optional_ns::optional<std::string> mod;
-    for (const auto& field : ADFields)
+    for (const auto &field : ADFields)
     {
         mod = getAdditionalDataItem(*data, field);
         if (mod && !(*mod).empty())
@@ -154,7 +155,7 @@ auto getSearchModifier(const DbusPropertyMap& properties)
                 return value;
             }
         }
-        catch (std::exception& e)
+        catch (std::exception &e)
         {
             using namespace phosphor::logging;
             log<level::ERR>("Invalid PROCEDURE value found",
@@ -165,8 +166,8 @@ auto getSearchModifier(const DbusPropertyMap& properties)
     return std::string{};
 }
 
-PolicyProps find(const policy::Table& policy,
-                 const DbusPropertyMap& errorLogProperties)
+PolicyProps find(const policy::Table &policy,
+                 const DbusPropertyMap &errorLogProperties)
 {
     auto errorMsg = getProperty<std::string>(errorLogProperties,
                                              "Message"); // e.g. xyz.X.Error.Y
@@ -189,6 +190,6 @@ PolicyProps find(const policy::Table& policy,
 
     return {policy.defaultEID(), policy.defaultMsg()};
 }
-}
-}
-}
+} // namespace policy
+} // namespace logging
+} // namespace ibm
