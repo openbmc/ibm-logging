@@ -90,8 +90,10 @@ if __name__ == '__main__':
         details = {}
 
         #Parse the error||modifer line. The modifier is optional.
-        if '||' in name:
-            error, modifier = name.split('||')
+        separatorPos = name.find('||')
+        if separatorPos != -1:
+            error = name[0:separatorPos]
+            modifier = name[separatorPos + 2:]
             details['mod'] = modifier
         else:
             error = name
