@@ -24,6 +24,31 @@
 using namespace ibm::logging;
 namespace fs = std::experimental::filesystem;
 
+static constexpr auto HOST_EVENT = "org.open_power.Host.Error.Event";
+
+// ESEL contents all of the way up to right before the severity
+// byte in the UH section
+static const std::string eSELBase =
+    "ESEL="
+    "00 00 df 00 00 00 00 20 00 04 07 5a 04 aa 00 00 50 48 00 30 01 00 e5 00 "
+    "00 00 f6 ca c9 da 5b b7 00 00 f6 ca d1 8a 2d e6 42 00 00 08 00 00 00 00 "
+    "00 00 00 00 00 00 00 00 89 00 03 44 89 00 03 44 55 48 00 18 01 00 e5 00 "
+    "13 03 ";
+
+static const std::string noUHeSEL =
+    "ESEL="
+    "00 00 df 00 00 00 00 20 00 04 07 5a 04 aa 00 00 50 48 00 30 01 00 e5 00 "
+    "00 00 f6 ca c9 da 5b b7 00 00 f6 ca d1 8a 2d e6 42 00 00 08 00 00 00 00 "
+    "00 00 00 00 00 00 00 00 89 00 03 44 89 00 03 44 00 00 00 18 01 00 e5 00 "
+    "13 03 10";
+
+// ESEL Severity bytes
+static const std::string SEV_RECOVERED = "10";
+static const std::string SEV_PREDICTIVE = "20";
+static const std::string SEV_UNRECOV = "40";
+static const std::string SEV_CRITICAL = "50";
+static const std::string SEV_DIAG = "60";
+
 static constexpr auto json = R"(
 [
     {
@@ -93,9 +118,9 @@ static constexpr auto json = R"(
         "msg":"Error FFFFFFFF"
       }
     ],
-
     "err":"xyz.openbmc_project.Error.Test5"
     },
+
     {
     "dtls":[
       {
@@ -104,9 +129,9 @@ static constexpr auto json = R"(
         "msg":"Error GGGGGGGG"
       }
     ],
-
     "err":"xyz.openbmc_project.Error.Test6"
     },
+
     {
     "dtls":[
       {
@@ -116,6 +141,58 @@ static constexpr auto json = R"(
       }
     ],
     "err":"xyz.openbmc_project.Error.Test7"
+    },
+
+    {
+    "dtls":[
+      {
+        "CEID":"IIIIIII",
+        "mod":"/match/this/path",
+        "msg":"Error IIIIIII"
+      }
+    ],
+    "err":"xyz.openbmc_project.Error.Test8"
+    },
+
+    {
+    "dtls":[
+      {
+        "CEID":"JJJJJJJJ",
+        "mod":"/inventory/core0||Warning",
+        "msg":"Error JJJJJJJJ"
+      },
+      {
+        "CEID":"KKKKKKKK",
+        "mod":"/inventory/core1||Informational",
+        "msg":"Error KKKKKKKK"
+      },
+      {
+        "CEID":"LLLLLLLL",
+        "mod":"/inventory/core2||Critical",
+        "msg":"Error LLLLLLLL"
+      },
+      {
+        "CEID":"MMMMMMMM",
+        "mod":"/inventory/core3||Critical",
+        "msg":"Error MMMMMMMM"
+      },
+      {
+        "CEID":"NNNNNNNN",
+        "mod":"/inventory/core4||Critical",
+        "msg":"Error NNNNNNNN"
+      },
+      {
+        "CEID":"OOOOOOOO",
+        "mod":"/inventory/core5",
+        "msg":"Error OOOOOOOO"
+      },
+      {
+        "CEID":"PPPPPPPP",
+        "mod":"/inventory/core5||Critical",
+        "msg":"Error PPPPPPPP"
+      }
+    ],
+    "err":"org.open_power.Host.Error.Event"
     }
 ])";
 
@@ -301,5 +378,121 @@ TEST_F(PolicyTableTest, TestFinder)
         auto values = policy::find(policy, testProperties);
         ASSERT_EQ(std::get<policy::EIDField>(values), policy.defaultEID());
         ASSERT_EQ(std::get<policy::MsgField>(values), policy.defaultMsg());
+    }
+
+    // Test a device path modifier match
+    {
+        std::vector<std::string> ad{"CALLOUT_DEVICE_PATH=/match/this/path"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"xyz.openbmc_project.Error.Test8"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "IIIIIII");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error IIIIIII");
+    }
+
+    // Test a predictive SEL matches on 'callout||Warning'
+    {
+        std::vector<std::string> ad{eSELBase + SEV_PREDICTIVE,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core0"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "JJJJJJJJ");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error JJJJJJJJ");
+    }
+
+    // Test a recovered SEL matches on 'callout||Informational'
+    {
+        std::vector<std::string> ad{eSELBase + SEV_RECOVERED,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core1"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "KKKKKKKK");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error KKKKKKKK");
+    }
+
+    // Test a critical severity matches on 'callout||Critical'
+    {
+        std::vector<std::string> ad{eSELBase + SEV_CRITICAL,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core2"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "LLLLLLLL");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error LLLLLLLL");
+    }
+
+    // Test an unrecoverable SEL matches on 'callout||Critical'
+    {
+        std::vector<std::string> ad{eSELBase + SEV_UNRECOV,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core3"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "MMMMMMMM");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error MMMMMMMM");
+    }
+
+    // Test a Diagnostic SEL matches on 'callout||Critical'
+    {
+        std::vector<std::string> ad{eSELBase + SEV_DIAG,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core4"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "NNNNNNNN");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error NNNNNNNN");
+    }
+
+    // Test a short eSEL still matches the normal callout
+    {
+        std::vector<std::string> ad{eSELBase,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core5"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "OOOOOOOO");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error OOOOOOOO");
+    }
+
+    // Test an eSEL with no UH section still matches a normal callout
+    {
+        std::vector<std::string> ad{noUHeSEL,
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core5"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "OOOOOOOO");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error OOOOOOOO");
+    }
+
+    // Test a bad severity is still considered critical (by design)
+    {
+        std::vector<std::string> ad{eSELBase + "ZZ",
+                                    "CALLOUT_INVENTORY_PATH=/inventory/core5"s};
+        DbusPropertyMap testProperties{
+            {"Message"s, Value{"org.open_power.Host.Error.Event"s}},
+            {"AdditionalData"s, ad}};
+
+        auto values = policy::find(policy, testProperties);
+        ASSERT_EQ(std::get<policy::EIDField>(values), "PPPPPPPP");
+        ASSERT_EQ(std::get<policy::MsgField>(values), "Error PPPPPPPP");
     }
 }

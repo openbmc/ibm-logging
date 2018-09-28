@@ -26,12 +26,13 @@ struct Details
     std::string ceid;
 };
 
+namespace optional_ns = std::experimental;
+
 using DetailsList = std::vector<Details>;
 using DetailsReference = std::reference_wrapper<const Details>;
+using FindResult = optional_ns::optional<DetailsReference>;
 
 using PolicyMap = std::map<std::string, DetailsList>;
-
-namespace optional_ns = std::experimental;
 
 /**
  * @class Table
@@ -78,8 +79,8 @@ class Table
      *
      * @return optional<DetailsReference> - the details entry
      */
-    optional_ns::optional<DetailsReference>
-        find(const std::string& error, const std::string& modifier) const;
+    FindResult find(const std::string& error,
+                    const std::string& modifier) const;
 
     /**
      * The default event ID to use when a match in the table

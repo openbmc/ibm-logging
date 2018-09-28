@@ -77,8 +77,8 @@ void Table::load(const std::string& jsonFile)
     }
 }
 
-optional_ns::optional<DetailsReference>
-    Table::find(const std::string& error, const std::string& modifier) const
+FindResult Table::find(const std::string& error,
+                       const std::string& modifier) const
 {
     // First find the entry based on the error, and then find which
     // underlying details object it is with the help of the modifier.
