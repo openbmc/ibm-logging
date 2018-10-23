@@ -41,16 +41,7 @@ ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
 
     auto reply = bus.call(method);
 
-    if (reply.is_method_error())
-    {
-        log<level::ERR>("Failed to get managed objects",
-                        entry("SERVICE=%s", service.c_str()),
-                        entry("PATH=%s", objPath.c_str()));
-    }
-    else
-    {
-        reply.read(interfaces);
-    }
+    reply.read(interfaces);
 
     return interfaces;
 }
@@ -67,17 +58,7 @@ DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
     method.append(interface);
     auto reply = bus.call(method);
 
-    if (reply.is_method_error())
-    {
-        log<level::ERR>("Failed to get all properties",
-                        entry("SERVICE=%s", service.c_str()),
-                        entry("PATH=%s", objPath.c_str()),
-                        entry("INTERFACE=%s", interface.c_str()));
-    }
-    else
-    {
-        reply.read(properties);
-    }
+    reply.read(properties);
 
     return properties;
 }
@@ -94,15 +75,7 @@ DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
     method.append(std::vector<std::string>({interface}));
     auto reply = bus.call(method);
 
-    if (reply.is_method_error())
-    {
-        log<level::ERR>("Failed to get subtree", entry("ROOT=%s", root.c_str()),
-                        entry("INTERFACE=%s", interface.c_str()));
-    }
-    else
-    {
-        reply.read(tree);
-    }
+    reply.read(tree);
 
     return tree;
 }
