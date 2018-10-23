@@ -109,7 +109,7 @@ void Manager::erase(EntryID id)
 }
 
 void Manager::addInterface(const std::string& objectPath, InterfaceType type,
-                           std::experimental::any& object)
+                           std::any& object)
 {
     auto id = getEntryID(objectPath);
     auto entry = entries.find(id);
@@ -127,8 +127,7 @@ void Manager::addInterface(const std::string& objectPath, InterfaceType type,
 }
 
 void Manager::addChildInterface(const std::string& objectPath,
-                                InterfaceType type,
-                                std::experimental::any& object)
+                                InterfaceType type, std::any& object)
 {
     auto id = getEntryID(objectPath);
     auto entry = childEntries.find(id);
@@ -173,7 +172,7 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 
     object->emit_object_added();
 
-    std::experimental::any anyObject = object;
+    std::any anyObject = object;
 
     addInterface(objectPath, InterfaceType::POLICY, anyObject);
 }
@@ -247,7 +246,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
             }
             object->serialize(dir);
 
-            std::experimental::any anyObject = object;
+            std::any anyObject = object;
             addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
             calloutNum++;
         }
@@ -289,7 +288,7 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
         if (callout->deserialize(saveDir))
         {
             callout->emit_object_added();
-            std::experimental::any anyObject = callout;
+            std::any anyObject = callout;
             addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
         }
     }

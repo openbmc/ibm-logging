@@ -27,8 +27,6 @@ namespace policy
 
 static constexpr auto HOST_EVENT = "org.open_power.Host.Error.Event";
 
-namespace optional_ns = std::experimental;
-
 /**
  * Returns a property value from a map of properties.
  *
@@ -39,8 +37,8 @@ namespace optional_ns = std::experimental;
  * @return optional<T> - the property value
  */
 template <typename T>
-optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
-                                     const std::string& name)
+std::optional<T> getProperty(const DbusPropertyMap& properties,
+                             const std::string& name)
 {
     auto prop = properties.find(name);
 
@@ -63,7 +61,7 @@ optional_ns::optional<T> getProperty(const DbusPropertyMap& properties,
  *
  * @return optional<std::string> - the data value. Will not be empty if found.
  */
-optional_ns::optional<std::string>
+std::optional<std::string>
     getAdditionalDataItem(const std::vector<std::string>& additionalData,
                           const std::string& name)
 {
@@ -104,7 +102,7 @@ optional_ns::optional<std::string>
  *
  * @return optional<std::string> - the severity string as listed above
  */
-optional_ns::optional<std::string> getESELSeverity(const std::string& data)
+std::optional<std::string> getESELSeverity(const std::string& data)
 {
     // The User Header section starts at byte 48, and take into account
     // the input data is a space separated string representation of HEX data.
@@ -240,7 +238,7 @@ auto getSearchModifier(const DbusPropertyMap& properties)
     static const std::vector<std::string> ADFields{"CALLOUT_INVENTORY_PATH",
                                                    "RAIL_NAME", "INPUT_NAME"};
 
-    optional_ns::optional<std::string> mod;
+    std::optional<std::string> mod;
     for (const auto& field : ADFields)
     {
         mod = getAdditionalDataItem(*data, field);

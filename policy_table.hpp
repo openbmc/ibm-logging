@@ -2,8 +2,8 @@
 
 #include "config.h"
 
-#include <experimental/optional>
 #include <map>
+#include <optional>
 #include <vector>
 
 namespace ibm
@@ -26,11 +26,9 @@ struct Details
     std::string ceid;
 };
 
-namespace optional_ns = std::experimental;
-
 using DetailsList = std::vector<Details>;
 using DetailsReference = std::reference_wrapper<const Details>;
-using FindResult = optional_ns::optional<DetailsReference>;
+using FindResult = std::optional<DetailsReference>;
 
 using PolicyMap = std::map<std::string, DetailsList>;
 
