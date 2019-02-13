@@ -10,14 +10,10 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],,\
-    AC_MSG_ERROR(["Requires openbmc/phosphor-dbus-interfaces package."]))
-PKG_CHECK_MODULES([IBM_DBUS_INTERFACES], [ibm-dbus-interfaces],,\
-    AC_MSG_ERROR(["Requires openbmc/ibm-dbus-interfaces package."]))
-PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],,
-    AC_MSG_ERROR(["Requires openbmc/sdbusplus package."]))
-PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],,\
-    AC_MSG_ERROR(["Requires openbmc/phosphor-logging package."]))
+PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces])
+PKG_CHECK_MODULES([IBM_DBUS_INTERFACES], [ibm-dbus-interfaces])
+PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus])
+PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging])
 
 AC_CHECK_HEADER(nlohmann/json.hpp, ,
                 [AC_MSG_ERROR([Could not find nlohmann/json.hpp... nlohmann/json package required])])
