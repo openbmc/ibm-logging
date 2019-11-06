@@ -72,7 +72,7 @@ AC_DEFINE(LOGGING_BUSNAME, "xyz.openbmc_project.Logging",
           [The xyz logging busname])
 AC_DEFINE(IBM_LOGGING_BUSNAME, "com.ibm.Logging",
           [The IBM log manager DBus busname to own])
-AC_DEFINE(ASSOC_IFACE, "org.openbmc.Associations",
+AC_DEFINE(ASSOC_IFACE, "xyz.openbmc_project.Association.Definitions",
           [The associations interface])
 AC_DEFINE(ASSET_IFACE, "xyz.openbmc_project.Inventory.Decorator.Asset",
           [The asset interface])

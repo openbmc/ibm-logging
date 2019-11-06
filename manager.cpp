@@ -193,7 +193,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
     }
 
     const auto& properties = associations->second;
-    auto assocProperty = properties.find("associations");
+    auto assocProperty = properties.find("Associations");
     auto assocValue =
         sdbusplus::message::variant_ns::get<AssociationsPropertyType>(
             assocProperty->second);
