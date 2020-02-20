@@ -123,11 +123,9 @@ def get_yaml(yaml_dir):
             if not files:
                 continue
 
-            err_files += map(
-                lambda f: os.path.relpath(
-                    os.path.join(directory, f),
-                    yaml_dir),
-                filter(lambda f: f.endswith('.errors.yaml'), files))
+            err_files += [os.path.relpath(
+                    os.path.join(directory, f), yaml_dir)
+                    for f in [f for f in files if f.endswith('.errors.yaml')]]
 
     return err_files
 
