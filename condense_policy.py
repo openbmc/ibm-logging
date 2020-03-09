@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''Condenses the error policy table down to only the fields used by
    the BMC Code.
