@@ -44,7 +44,7 @@ std::optional<T> getProperty(const DbusPropertyMap& properties,
 
     if (prop != properties.end())
     {
-        return sdbusplus::message::variant_ns::get<T>(prop->second);
+        return std::get<T>(prop->second);
     }
 
     return {};

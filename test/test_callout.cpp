@@ -74,20 +74,14 @@ TEST_F(CalloutTest, TestPersist)
         ASSERT_EQ(callout->ts(), ts);
         ASSERT_EQ(callout->path(), calloutPath);
         ASSERT_EQ(callout->buildDate(),
-                  sdbusplus::message::variant_ns::get<std::string>(
-                      assetProps["BuildDate"]));
+                  std::get<std::string>(assetProps["BuildDate"]));
         ASSERT_EQ(callout->manufacturer(),
-                  sdbusplus::message::variant_ns::get<std::string>(
-                      assetProps["Manufacturer"]));
-        ASSERT_EQ(callout->model(),
-                  sdbusplus::message::variant_ns::get<std::string>(
-                      assetProps["Model"]));
+                  std::get<std::string>(assetProps["Manufacturer"]));
+        ASSERT_EQ(callout->model(), std::get<std::string>(assetProps["Model"]));
         ASSERT_EQ(callout->partNumber(),
-                  sdbusplus::message::variant_ns::get<std::string>(
-                      assetProps["PartNumber"]));
+                  std::get<std::string>(assetProps["PartNumber"]));
         ASSERT_EQ(callout->serialNumber(),
-                  sdbusplus::message::variant_ns::get<std::string>(
-                      assetProps["SerialNumber"]));
+                  std::get<std::string>(assetProps["SerialNumber"]));
     }
 
     // Test a serialization failure due to a bad timestamp

@@ -99,34 +99,31 @@ Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
     auto it = properties.find("BuildDate");
     if (it != properties.end())
     {
-        buildDate(sdbusplus::message::variant_ns::get<std::string>(it->second));
+        buildDate(std::get<std::string>(it->second));
     }
 
     it = properties.find("Manufacturer");
     if (it != properties.end())
     {
-        manufacturer(
-            sdbusplus::message::variant_ns::get<std::string>(it->second));
+        manufacturer(std::get<std::string>(it->second));
     }
 
     it = properties.find("Model");
     if (it != properties.end())
     {
-        model(sdbusplus::message::variant_ns::get<std::string>(it->second));
+        model(std::get<std::string>(it->second));
     }
 
     it = properties.find("PartNumber");
     if (it != properties.end())
     {
-        partNumber(
-            sdbusplus::message::variant_ns::get<std::string>(it->second));
+        partNumber(std::get<std::string>(it->second));
     }
 
     it = properties.find("SerialNumber");
     if (it != properties.end())
     {
-        serialNumber(
-            sdbusplus::message::variant_ns::get<std::string>(it->second));
+        serialNumber(std::get<std::string>(it->second));
     }
 
     emit_object_added();
