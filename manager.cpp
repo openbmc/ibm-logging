@@ -194,9 +194,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
 
     const auto& properties = associations->second;
     auto assocProperty = properties.find("Associations");
-    auto assocValue =
-        sdbusplus::message::variant_ns::get<AssociationsPropertyType>(
-            assocProperty->second);
+    auto assocValue = std::get<AssociationsPropertyType>(assocProperty->second);
 
     auto id = getEntryID(objectPath);
     auto calloutNum = 0;
@@ -319,8 +317,7 @@ uint64_t Manager::getLogTimestamp(const DbusInterfaceMap& interfaces)
         auto property = interface->second.find("Timestamp");
         if (property != interface->second.end())
         {
-            return sdbusplus::message::variant_ns::get<uint64_t>(
-                property->second);
+            return std::get<uint64_t>(property->second);
         }
     }
 
