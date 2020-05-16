@@ -4,6 +4,7 @@
 #include "interfaces.hpp"
 
 #include <experimental/filesystem>
+#include <string>
 
 namespace ibm
 {

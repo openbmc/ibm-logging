@@ -9,6 +9,7 @@
 #include <experimental/filesystem>
 #include <map>
 #include <sdbusplus/bus.hpp>
+#include <string>
 #ifdef USE_POLICY_INTERFACE
 #include "policy_table.hpp"
 #endif

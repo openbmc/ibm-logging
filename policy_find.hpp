@@ -3,6 +3,8 @@
 #include "dbus.hpp"
 #include "policy_table.hpp"
 
+#include <string>
+
 namespace ibm
 {
 namespace logging
