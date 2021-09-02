@@ -29,7 +29,6 @@ namespace logging
 
 namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
-using sdbusplus::exception::SdBusError;
 
 Manager::Manager(sdbusplus::bus::bus& bus) :
     bus(bus),
@@ -69,7 +68,7 @@ void Manager::createAll()
             }
         }
     }
-    catch (const SdBusError& e)
+    catch (const sdbusplus::exception::exception& e)
     {
         log<level::ERR>("sdbusplus error getting logging managed objects",
                         entry("ERROR=%s", e.what()));
@@ -250,7 +249,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
             addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
             calloutNum++;
         }
-        catch (const SdBusError& e)
+        catch (const sdbusplus::exception::exception& e)
         {
             log<level::ERR>("sdbusplus exception", entry("ERROR=%s", e.what()));
         }
