@@ -161,7 +161,7 @@ bool Callout::deserialize(const fs::path& dir)
 
         iarchive(*this);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         log<level::ERR>(e.what());
         log<level::ERR>("Failed trying to restore a Callout object",

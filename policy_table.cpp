@@ -68,7 +68,7 @@ void Table::load(const std::string& jsonFile)
 
         loaded = true;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         log<level::ERR>("Failed loading policy table json file",
                         entry("FILE=%s", jsonFile.c_str()),

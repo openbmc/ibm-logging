@@ -284,7 +284,7 @@ auto getSearchModifier(const DbusPropertyMap& properties)
                 return value;
             }
         }
-        catch (std::exception& e)
+        catch (const std::exception& e)
         {
             using namespace phosphor::logging;
             log<level::ERR>("Invalid PROCEDURE value found",

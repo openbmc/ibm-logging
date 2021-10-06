@@ -273,7 +273,7 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
         {
             id = std::stoul(f.path().filename());
         }
-        catch (std::exception& e)
+        catch (const std::exception& e)
         {
             log<level::ERR>("Invalid IBM logging callout save file. Deleting",
                             entry("FILE=%s", f.path().c_str()));
