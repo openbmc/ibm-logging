@@ -164,7 +164,8 @@ void Manager::createPolicyInterface(const std::string& objectPath,
 {
     auto values = policy::find(policies, properties);
 
-    auto object = std::make_shared<PolicyObject>(bus, objectPath.c_str(), true);
+    auto object = std::make_shared<PolicyObject>(
+        bus, objectPath.c_str(), PolicyObject::action::defer_emit);
 
     object->eventID(std::get<policy::EIDField>(values));
     object->description(std::get<policy::MsgField>(values));
