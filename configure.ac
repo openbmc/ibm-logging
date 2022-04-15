@@ -21,7 +21,7 @@ AC_CHECK_HEADER(cereal/archives/binary.hpp, ,
                 [AC_MSG_ERROR([Could not find cereal/archives/binary.hpp... cereal package required])])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AX_CXX_COMPILE_STDCXX_17([noext])
+AX_CXX_COMPILE_STDCXX([20],[noext])
 AX_APPEND_COMPILE_FLAGS([-Wall -Werror], [CXXFLAGS])
 
 LT_INIT
