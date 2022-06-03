@@ -148,7 +148,7 @@ void Manager::addChildInterface(const std::string& objectPath,
         auto i = entry->second.find(type);
         if (i == entry->second.end())
         {
-            ObjectList objects{objects};
+            ObjectList objects{object};
             entry->second.emplace(type, objects);
         }
         else
