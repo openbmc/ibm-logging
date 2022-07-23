@@ -24,7 +24,7 @@ int main()
 {
     auto bus = sdbusplus::bus::new_default();
 
-    sdbusplus::server::manager::manager objManager(bus, LOGGING_PATH);
+    sdbusplus::server::manager_t objManager(bus, LOGGING_PATH);
 
     ibm::logging::Manager manager{bus};
 

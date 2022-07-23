@@ -30,7 +30,7 @@ namespace logging
 namespace fs = std::experimental::filesystem;
 using namespace phosphor::logging;
 
-Manager::Manager(sdbusplus::bus::bus& bus) :
+Manager::Manager(sdbusplus::bus_t& bus) :
     bus(bus),
     addMatch(bus,
              sdbusplus::bus::match::rules::interfacesAdded() +
@@ -68,7 +68,7 @@ void Manager::createAll()
             }
         }
     }
-    catch (const sdbusplus::exception::exception& e)
+    catch (const sdbusplus::exception_t& e)
     {
         log<level::ERR>("sdbusplus error getting logging managed objects",
                         entry("ERROR=%s", e.what()));
@@ -250,7 +250,7 @@ void Manager::createCalloutObjects(const std::string& objectPath,
             addChildInterface(objectPath, InterfaceType::CALLOUT, anyObject);
             calloutNum++;
         }
-        catch (const sdbusplus::exception::exception& e)
+        catch (const sdbusplus::exception_t& e)
         {
             log<level::ERR>("sdbusplus exception", entry("ERROR=%s", e.what()));
         }
@@ -294,7 +294,7 @@ void Manager::restoreCalloutObjects(const std::string& objectPath,
     }
 }
 
-void Manager::interfaceAdded(sdbusplus::message::message& msg)
+void Manager::interfaceAdded(sdbusplus::message_t& msg)
 {
     sdbusplus::message::object_path path;
     DbusInterfaceMap interfaces;
@@ -340,7 +340,7 @@ std::string Manager::getCalloutObjectPath(const std::string& objectPath,
     return fs::path{objectPath} / "callouts" / std::to_string(calloutNum);
 }
 
-void Manager::interfaceRemoved(sdbusplus::message::message& msg)
+void Manager::interfaceRemoved(sdbusplus::message_t& msg)
 {
     sdbusplus::message::object_path path;
     DbusInterfaceList interfaces;

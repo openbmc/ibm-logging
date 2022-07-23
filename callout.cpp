@@ -81,14 +81,14 @@ void load(Archive& archive, Callout& callout, const std::uint32_t version)
     callout.serialNumber(sn);
 }
 
-Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
+Callout::Callout(sdbusplus::bus_t& bus, const std::string& objectPath,
                  size_t id, uint64_t timestamp) :
     CalloutObject(bus, objectPath.c_str(), CalloutObject::action::defer_emit),
     entryID(id), timestamp(timestamp)
 {
 }
 
-Callout::Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
+Callout::Callout(sdbusplus::bus_t& bus, const std::string& objectPath,
                  const std::string& inventoryPath, size_t id,
                  uint64_t timestamp, const DbusPropertyMap& properties) :
     CalloutObject(bus, objectPath.c_str(), CalloutObject::action::defer_emit),

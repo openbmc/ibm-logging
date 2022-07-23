@@ -43,7 +43,7 @@ class Manager
      *
      * @param[in] bus - the D-Bus bus object
      */
-    explicit Manager(sdbusplus::bus::bus& bus);
+    explicit Manager(sdbusplus::bus_t& bus);
 
   private:
     using EntryID = uint32_t;
@@ -70,7 +70,7 @@ class Manager
      *
      * @param[in] msg - the sdbusplus message
      */
-    void interfaceAdded(sdbusplus::message::message& msg);
+    void interfaceAdded(sdbusplus::message_t& msg);
 
     /**
      * The callback for an interfaces removed signal
@@ -80,7 +80,7 @@ class Manager
      *
      * @param[in] msg - the sdbusplus message
      */
-    void interfaceRemoved(sdbusplus::message::message& msg);
+    void interfaceRemoved(sdbusplus::message_t& msg);
 
     /**
      * Creates the IBM interfaces for all existing error log
@@ -252,7 +252,7 @@ class Manager
     /**
      * The sdbusplus bus object
      */
-    sdbusplus::bus::bus& bus;
+    sdbusplus::bus_t& bus;
 
     /**
      * The match object for interfacesAdded
