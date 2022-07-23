@@ -10,7 +10,7 @@ namespace logging
 {
 
 template <typename... T>
-using ServerObject = typename sdbusplus::server::object::object<T...>;
+using ServerObject = typename sdbusplus::server::object_t<T...>;
 
 using ObjectPathInterface =
     sdbusplus::xyz::openbmc_project::Common::server::ObjectPath;

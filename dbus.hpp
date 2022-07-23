@@ -46,7 +46,7 @@ using DbusSubtree =
  * @return ObjectValueTree - A map of object paths to their
  *                           interfaces and properties.
  */
-ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
+ObjectValueTree getManagedObjects(sdbusplus::bus_t& bus,
                                   const std::string& service,
                                   const std::string& objPath);
 
@@ -62,7 +62,7 @@ ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
  * @return DbusSubtree - A map of object paths to their
  *                       services and interfaces.
  */
-DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
+DbusSubtree getSubtree(sdbusplus::bus_t& bus, const std::string& root,
                        int depth, const std::string& interface);
 
 /**
@@ -93,7 +93,7 @@ DbusService getService(const std::string& objPath, const std::string& interface,
  *
  * @return DbusPropertyMap - The map of property names to values
  */
-DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
+DbusPropertyMap getAllProperties(sdbusplus::bus_t& bus,
                                  const std::string& service,
                                  const std::string& objPath,
                                  const std::string& interface);

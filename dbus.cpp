@@ -29,7 +29,7 @@ constexpr auto PROPERTY_IFACE = "org.freedesktop.DBus.Properties";
 
 using namespace phosphor::logging;
 
-ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
+ObjectValueTree getManagedObjects(sdbusplus::bus_t& bus,
                                   const std::string& service,
                                   const std::string& objPath)
 {
@@ -46,7 +46,7 @@ ObjectValueTree getManagedObjects(sdbusplus::bus::bus& bus,
     return interfaces;
 }
 
-DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
+DbusPropertyMap getAllProperties(sdbusplus::bus_t& bus,
                                  const std::string& service,
                                  const std::string& objPath,
                                  const std::string& interface)
@@ -63,7 +63,7 @@ DbusPropertyMap getAllProperties(sdbusplus::bus::bus& bus,
     return properties;
 }
 
-DbusSubtree getSubtree(sdbusplus::bus::bus& bus, const std::string& root,
+DbusSubtree getSubtree(sdbusplus::bus_t& bus, const std::string& root,
                        int depth, const std::string& interface)
 {
     DbusSubtree tree;

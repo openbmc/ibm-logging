@@ -44,7 +44,7 @@ class Callout : public CalloutObject
      * @param[in] timestamp - timestamp when the log was created
      * @param[in] properties - the properties for the Asset interface.
      */
-    Callout(sdbusplus::bus::bus& bus, const std::string& objectPath,
+    Callout(sdbusplus::bus_t& bus, const std::string& objectPath,
             const std::string& inventoryPath, size_t id, uint64_t timestamp,
             const DbusPropertyMap& properties);
     /**
@@ -59,7 +59,7 @@ class Callout : public CalloutObject
      * @param[in] timestamp - timestamp when the log was created
      * @param[in] properties - the properties for the Asset interface.
      */
-    Callout(sdbusplus::bus::bus& bus, const std::string& objectPath, size_t id,
+    Callout(sdbusplus::bus_t& bus, const std::string& objectPath, size_t id,
             uint64_t timestamp);
 
     /**
