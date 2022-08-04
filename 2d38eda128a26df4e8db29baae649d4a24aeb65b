@@ -1,0 +1,7 @@
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Matt Spinler <spinler@us.ibm.com>
+Submitted-by: Matt Spinler <spinler@us.ibm.com>
+Submitted-at: Thu, 04 Aug 2022 20:13:10 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/ibm-logging/+/56175
+Project: openbmc/ibm-logging
+Branch: refs/heads/master
