@@ -100,7 +100,7 @@ if __name__ == "__main__":
         separatorPos = name.find("||")
         if separatorPos != -1:
             error = name[0:separatorPos]
-            modifier = name[separatorPos + 2:]
+            modifier = name[separatorPos + 2 :]
             details["mod"] = modifier
         else:
             error = name
