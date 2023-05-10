@@ -5,10 +5,11 @@
 #include "dbus.hpp"
 #include "interfaces.hpp"
 
+#include <sdbusplus/bus.hpp>
+
 #include <any>
 #include <experimental/filesystem>
 #include <map>
-#include <sdbusplus/bus.hpp>
 #include <string>
 #ifdef USE_POLICY_INTERFACE
 #include "policy_table.hpp"

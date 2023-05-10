@@ -226,8 +226,8 @@ void Manager::createCalloutObjects(const std::string& objectPath,
                 continue;
             }
 
-            auto properties =
-                getAllProperties(bus, service, callout, ASSET_IFACE);
+            auto properties = getAllProperties(bus, service, callout,
+                                               ASSET_IFACE);
             if (properties.empty())
             {
                 continue;

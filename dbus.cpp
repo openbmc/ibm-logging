@@ -90,11 +90,10 @@ DbusService getService(const std::string& objPath, const std::string& interface,
     {
         auto s = std::find_if(services->second.begin(), services->second.end(),
                               [&interface](const auto& entry) {
-                                  auto i =
-                                      std::find(entry.second.begin(),
-                                                entry.second.end(), interface);
-                                  return i != entry.second.end();
-                              });
+            auto i = std::find(entry.second.begin(), entry.second.end(),
+                               interface);
+            return i != entry.second.end();
+        });
         if (s != services->second.end())
         {
             service = s->first;

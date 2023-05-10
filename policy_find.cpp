@@ -16,6 +16,7 @@
 #include "policy_find.hpp"
 
 #include <phosphor-logging/log.hpp>
+
 #include <sstream>
 
 namespace ibm
@@ -168,8 +169,8 @@ std::optional<std::string> getESELSeverity(const std::string& data)
 std::string getSearchModifierFirstTry(const std::string& message,
                                       const DbusPropertyMap& properties)
 {
-    auto data =
-        getProperty<std::vector<std::string>>(properties, "AdditionalData");
+    auto data = getProperty<std::vector<std::string>>(properties,
+                                                      "AdditionalData");
 
     if (!data)
     {
@@ -226,8 +227,8 @@ auto getSearchModifier(const DbusPropertyMap& properties)
     // AdditionalData property.  Try them all until one
     // is found.
 
-    auto data =
-        getProperty<std::vector<std::string>>(properties, "AdditionalData");
+    auto data = getProperty<std::vector<std::string>>(properties,
+                                                      "AdditionalData");
 
     if (!data)
     {
@@ -306,8 +307,8 @@ PolicyProps find(const policy::Table& policy,
 
         // Try with the FirstTry modifier first, and then the regular one.
 
-        auto modifier =
-            getSearchModifierFirstTry(*errorMsg, errorLogProperties);
+        auto modifier = getSearchModifierFirstTry(*errorMsg,
+                                                  errorLogProperties);
 
         if (!modifier.empty())
         {

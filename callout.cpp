@@ -22,9 +22,10 @@
 #include <cereal/types/string.hpp>
 #include <cereal/types/tuple.hpp>
 #include <cereal/types/vector.hpp>
+#include <phosphor-logging/log.hpp>
+
 #include <experimental/filesystem>
 #include <fstream>
-#include <phosphor-logging/log.hpp>
 
 CEREAL_CLASS_VERSION(ibm::logging::Callout, CALLOUT_CLASS_VERSION);
 
@@ -85,8 +86,7 @@ Callout::Callout(sdbusplus::bus_t& bus, const std::string& objectPath,
                  size_t id, uint64_t timestamp) :
     CalloutObject(bus, objectPath.c_str(), CalloutObject::action::defer_emit),
     entryID(id), timestamp(timestamp)
-{
-}
+{}
 
 Callout::Callout(sdbusplus::bus_t& bus, const std::string& objectPath,
                  const std::string& inventoryPath, size_t id,
